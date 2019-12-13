@@ -1,9 +1,9 @@
 const _ = require('lodash');
+const OAuth = require('./oauth');
 
 export class OAuthAuthentication {
 	constructor(options) {
 		console.debug('🦖  you are here →   OAuthAuthentication.constructor');
-		const OAuth = require('./oauth');
 		this.oauth = new OAuth(options);
 
 	 }

@@ -33,7 +33,13 @@
 		"type": "git",
 		"url": "github:brentonhouse/titanium-authentication-oauth"
 	},
-	"dependencies": {},
+	"bugs": {
+		"url": "https://github.com/brentonhouse/titanium-authentication-oauth/issues",
+		"email": "brenton.house@gmail.com"
+	},	
+	"dependencies": {
+		"@titanium/jwt": "0.0.2"
+	},
 	"devDependencies": {
 		"@titanium/eslint-config": "0.0.11",
 		"eslint": "^6.7.2"
