@@ -45,10 +45,10 @@
 		"@titanium/jwt": "0.0.1",
 		"moment": "^2.24.0"
 	},
-	"main": "./Authentication-oauth.js",
+	"main": "./OAuthAuthentication.js",
 	"scripts": {
 		"test": "npm install --ignore-scripts && npm run list-files",
 		"list-files": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz",
-		"prepublishOnly2": "git pull && bump"
+		"prepublishOnly": "git pull && bump"
 	}
 }
