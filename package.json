@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/authentication-oauth",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Titanium native mobile OAuth plugin for authentication manager",
 	"keywords": [
 		"oauth",
@@ -36,7 +36,7 @@
 	"bugs": {
 		"url": "https://github.com/brentonhouse/titanium-authentication-oauth/issues",
 		"email": "brenton.house@gmail.com"
-	},	
+	},
 	"dependencies": {
 		"@titanium/jwt": "0.0.2"
 	},
