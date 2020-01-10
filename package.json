@@ -38,7 +38,7 @@
 		"email": "brenton.house@gmail.com"
 	},
 	"dependencies": {
-		"@titanium/jwt": ">=0.0.4"
+		"@titanium/jwt": ">=0.0.3"
 	},
 	"devDependencies": {
 		"@titanium/eslint-config": "0.0.11",
