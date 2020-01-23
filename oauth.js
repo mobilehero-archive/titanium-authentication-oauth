@@ -1,11 +1,10 @@
-const { relativeTimeThreshold } = require('moment');
 const _ = require('lodash');
 const Owner = require('./flows/owner');
 
 export class OAuth {
 
 	constructor(params = {}) {
-		console.debug('🦖  you are here →   oauth.constructor');
+		console.debug('🔒  you are here →   oauth.constructor');
 
 		if (params.keyfile) {
 			params.key = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, params.keyfile).read().text;

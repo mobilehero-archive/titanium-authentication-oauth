@@ -5,7 +5,7 @@ const Please = require('@titanium/please');
 
 export class Owner {
 	constructor(params) {
-		console.debug('🦖  you are here →   oauth.flows.owner.constructor');
+		console.debug('🔒  you are here →   oauth.flows.owner.constructor');
 		this.baseUrl = params.baseUrl || '';
 		this.endpoint = this.baseUrl + params.tokenPath;
 		this.client_id = params.client_id;
@@ -18,7 +18,7 @@ export class Owner {
 	}
 
 	getToken(options = {}) {
-		console.debug('🦖  you are here →   oauth.flows.owner.getToken');
+		console.debug('🔒  you are here →   oauth.flows.owner.getToken');
 		const login_info = {...options};
 		const {username, password} = login_info;
 		// console.debug(`options: ${JSON.stringify(options, null, 2)}`);
@@ -43,26 +43,21 @@ export class Owner {
 			}),
 		});
 
-		console.debug(`client_options: ${JSON.stringify(client_options, null, 2)}`);
-		console.debug(`this.endpoint: ${JSON.stringify(this.endpoint, null, 2)}`);
 		const api = new Please(client_options);
 
 		return api.post()
 			.then(response => {
-				console.debug('🦖  you are here → owner.getToken.response');
-				// console.debug(`response: ${JSON.stringify(response, null, 2)}`);
+				console.debug('🔒  you are here → owner.getToken.response');
 
 				const body = response.json;
-				// console.debug(`body: ${JSON.stringify(body, null, 2)}`);
 
 				const authError = this.getAuthError(response);
 				if (authError) {
-					console.debug('🦖  you are here → owner.getToken.authError');
+					console.debug('🔒  you are here → owner.getToken.authError');
 					return Promise.reject(authError);
 				}
 
 				const token = new Token(body, {key: this.key});
-				// console.debug(`token: ${JSON.stringify(token, null, 2)}`);
 
 				return token;
 			});
@@ -80,7 +75,7 @@ export class Owner {
 		if (message) {
 			const authErr = new Error(message);
 			authErr.body = response.body;
-			authErr.code = 'EAUTH';
+			authErr.code = 'ERROR';
 			//   return authErr;
 			return authErr;
 		}
@@ -89,7 +84,7 @@ export class Owner {
 			var statusErr = new Error('access_denied');
 			statusErr.status = response.status;
 			statusErr.body = response.body;
-			statusErr.code = 'ESTATUS';
+			statusErr.code = 'ERROR';
 			return statusErr;
 		}
 
@@ -97,59 +92,30 @@ export class Owner {
 			const statusErr = new Error(`HTTP status ${response.status}`);
 			statusErr.status = response.status;
 			statusErr.body = response.body;
-			statusErr.code = 'ESTATUS';
+			statusErr.code = 'ERROR';
 			return statusErr;
 		}
 
 		if (response.status >= 500) {
 			const statusErr = new Error('server_error');
 			statusErr.status = response.status;
-			statusErr.code = 'ESTATUS';
+			statusErr.code = 'ERROR';
 			return statusErr;
 		}
 	}
 }
 
 const ERROR_RESPONSES = {
-	invalid_request: [
-		'The request is missing a required parameter, includes an',
-		'invalid parameter value, includes a parameter more than',
-		'once, or is otherwise malformed.',
-	].join(' '),
-	invalid_client: [
-		'Client authentication failed (e.g., unknown client, no',
-		'client authentication included, or unsupported',
-		'authentication method).',
-	].join(' '),
-	invalid_grant: [
-		'The provided authorization grant (e.g., authorization',
-		'code, resource owner credentials) or refresh token is',
-		'invalid, expired, revoked, does not match the redirection',
-		'URI used in the authorization request, or was issued to',
-		'another client.',
-	].join(' '),
-	unauthorized_client: ['The client is not authorized to request an authorization', 'code using this method.'].join(
-		' ',
-	),
-	unsupported_grant_type: ['The authorization grant type is not supported by the', 'authorization server.'].join(' '),
-	access_denied: ['The resource owner or authorization server denied the request.'].join(' '),
-	unsupported_response_type: [
-		'The authorization server does not support obtaining',
-		'an authorization code using this method.',
-	].join(' '),
-	invalid_scope: ['The requested scope is invalid, unknown, or malformed.'].join(' '),
-	server_error: [
-		'The authorization server encountered an unexpected',
-		'condition that prevented it from fulfilling the request.',
-		'(This error code is needed because a 500 Internal Server',
-		'Error HTTP status code cannot be returned to the client',
-		'via an HTTP redirect.)',
-	].join(' '),
-	temporarily_unavailable: [
-		'The authorization server is currently unable to handle',
-		'the request due to a temporary overloading or maintenance',
-		'of the server.',
-	].join(' '),
+	invalid_request: 'The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed.',
+	invalid_client: 'Client authentication failed (e.g., unknown client, no client authentication included, or unsupported authentication method).',
+	invalid_grant: 'The provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.',1
+	unauthorized_client: 'The client is not authorized to request an authorization code using this method.',
+	unsupported_grant_type: 'The authorization grant type is not supported by the authorization server.',
+	access_denied: 'The resource owner or authorization server denied the request.',
+	unsupported_response_type: 'The authorization server does not support obtaining an authorization code using this method.',
+	invalid_scope: 'The requested scope is invalid, unknown, or malformed.',
+	server_error: 'The authorization server encountered an unexpected condition that prevented it from fulfilling the request. (This error code is needed because a 500 Internal Server Error HTTP status code cannot be returned to the client via an HTTP redirect.),
+	temporarily_unavailable: 'The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.',
 };
 
 module.exports = Owner;
