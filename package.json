@@ -38,7 +38,7 @@
 		"email": "brenton.house@gmail.com"
 	},
 	"dependencies": {
-		"@titanium/jwt": ">=0.0.8"
+		"@titanium/jwt": ">=0.0.9"
 	},
 	"devDependencies": {
 		"@titanium/eslint-config": "0.0.11",
@@ -47,7 +47,7 @@
 	},
 	"peerDependencies": {
 		"@titanium/please": "^0.0.2",
-		"@titanium/jwt": ">=0.0.8",
+		"@titanium/jwt": ">=0.0.9",
 		"@titanium/polyfill": ">=0.0.5"
 	},
 	"main": "./OAuthAuthentication.js",
