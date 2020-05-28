@@ -7,7 +7,7 @@ export class OAuthAuthentication {
 
 	 }
 
-	async authenticate({ username, password }) {
+	async authenticate({ username, password, options = {} }) {
 		console.debug('🔒  you are here →   OAuthAuthentication.authenticate');
 		return this.oauth.owner.getToken({ username, password })
 			.then(token => {
