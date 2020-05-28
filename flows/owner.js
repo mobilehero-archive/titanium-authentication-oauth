@@ -114,7 +114,7 @@ const ERROR_RESPONSES = {
 	access_denied: 'The resource owner or authorization server denied the request.',
 	unsupported_response_type: 'The authorization server does not support obtaining an authorization code using this method.',
 	invalid_scope: 'The requested scope is invalid, unknown, or malformed.',
-	server_error: 'The authorization server encountered an unexpected condition that prevented it from fulfilling the request. (This error code is needed because a 500 Internal Server Error HTTP status code cannot be returned to the client via an HTTP redirect.),
+	server_error: 'The authorization server encountered an unexpected condition that prevented it from fulfilling the request. (This error code is needed because a 500 Internal Server Error HTTP status code cannot be returned to the client via an HTTP redirect.)',
 	temporarily_unavailable: 'The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.',
 };
 
