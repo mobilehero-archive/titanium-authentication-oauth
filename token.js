@@ -1,10 +1,10 @@
-const jwt = require('@titanium/jwt');
+const jsonwebtoken = require('@titanium/jwt');
 const _ = require('lodash');
 const moment = require('moment');
 
-export class Token {
+class Token {
 	constructor(data, params = {}) {
-		console.debug('🦖  you are here →   token.constructor');
+		turbo.trace('🔒  you are here →   token.constructor');
 		this.token_type = data.token_type && data.token_type.toLowerCase();
 		this.access_token = data.access_token;
 		this.refresh_token = data.refresh_token;
@@ -12,18 +12,26 @@ export class Token {
 		this.data = _.omit(data, [ 'token_type', 'access_token', 'refresh_token', 'expires_in' ]);
 
 
-		this.jwt = jwt.decode(this.access_token, params.key);
+		this.access_token_jwt = jsonwebtoken.decode(this.access_token, params.key);
 		// console.debug(`this.jwt: ${JSON.stringify(this.jwt, null, 2)}`);
 
-		if (jwt) {
+		if (this.access_token_jwt) {
 
-			this.name = this.jwt.name;
-			this.issuer = this.jwt.iss;
-			this.audience = this.jwt.aud;
-			this.subject = this.jwt.sub;
+			this.authenticated = true;
+			this.user = {
+				username:       this.access_token_jwt.username,
+				first_name:     this.access_token_jwt.given_name,
+				last_name:      this.access_token_jwt.family_name,
+				formatted_name: this.access_token_jwt.name,
+				email:          this.access_token_jwt.email,
+				scopes:         _.split(_.trim(this.access_token_jwt.scope || ''), /\s*/g).filter(o => o),
+			};
+			this.issuer = this.access_token_jwt.iss;
+			this.audience = this.access_token_jwt.aud;
+			this.subject = this.access_token_jwt.sub;
 
-			this.issued_at = moment.unix(this.jwt.iat);
-			this.expires_at = moment.unix(this.jwt.exp);
+			// this.access_token_issued_at = moment.unix(this.access_token_jwt.iat);
+			// this.access_token_expires_at = moment.unix(this.access_token_jwt.exp);
 
 		}
 

@@ -2,23 +2,22 @@ const _ = require('lodash');
 const querystring = require('querystring');
 const Token = require('../token');
 const Please = require('@titanium/please');
-
-export class Owner {
-	constructor(params) {
-		console.debug('🔒  you are here →   oauth.flows.owner.constructor');
-		this.baseUrl = params.baseUrl || '';
-		this.endpoint = this.baseUrl + params.tokenPath;
-		this.client_id = params.client_id;
-		this.client_secret = params.client_secret;
-		this.default_headers = params.default_headers;
-		this.key = params.key;
+class Owner {
+	constructor({ baseUrl = '', tokenPath, client_id, client_secret, default_headers, key}) {
+		turbo.trace('🔒  you are here →   oauth.flows.owner.constructor');
+		this.baseUrl = baseUrl;
+		this.endpoint = this.baseUrl + tokenPath;
+		this.client_id = client_id;
+		this.client_secret = client_secret;
+		this.default_headers = default_headers;
+		this.key = key;
 
 		// console.debug(`params: ${JSON.stringify(params, null, 2)}`);
-		// console.debug(`this: ${JSON.stringify(this, null, 2)}`);
+		turbo.debug(`OAuth.Owner: ${JSON.stringify(this, null, 2)}`);
 	}
 
-	getToken(options = {}) {
-		console.debug('🔒  you are here →   oauth.flows.owner.getToken');
+	async getToken(options = {}) {
+		turbo.trace('🔒  you are here →   oauth.flows.owner.getToken');
 		const login_info = {...options};
 		const {username, password} = login_info;
 		// console.debug(`options: ${JSON.stringify(options, null, 2)}`);
@@ -43,24 +42,23 @@ export class Owner {
 			}),
 		});
 
-		const api = new Please(client_options);
+		const please = new Please(client_options);
 
-		return api.post()
-			.then(response => {
-				console.debug('🔒  you are here → owner.getToken.response');
+		const response = await please.post();
+		turbo.trace('🔒  you are here → owner.getToken.response');
 
-				const body = response.json;
+		const body = response.json;
 
-				const authError = this.getAuthError(response);
-				if (authError) {
-					console.debug('🔒  you are here → owner.getToken.authError');
-					return Promise.reject(authError);
-				}
+		const authError = this.getAuthError(response);
+		if (authError) {
+			turbo.trace('🔒  you are here → owner.getToken.authError');
+			return Promise.reject(authError);
+		}
 
-				const token = new Token(body, {key: this.key});
+		const token = new Token(body, {key: this.key});
 
-				return token;
-			});
+		return token;
+			// });
 		// .catch(error => {
 		// 	console.debug('you are here → owner.getToken error');
 		// 	console.error(error);

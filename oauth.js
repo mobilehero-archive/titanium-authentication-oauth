@@ -1,20 +1,20 @@
 const _ = require('lodash');
 const Owner = require('./flows/owner');
 
-export class OAuth {
+class OAuth {
 
-	constructor(params = {}) {
-		console.debug('🔒  you are here →   oauth.constructor');
+	constructor({ baseUrl, tokenPath, client_id, keyfile, key, defaultHeaders } = {}) {
+		turbo.trace('🔒  you are here →  OAuth.constructor()');
 
-		if (params.keyfile) {
-			params.key = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, params.keyfile).read().text;
+		if (keyfile) {
+			key = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, keyfile).read().text;
 		}
 
-		_.assign(this, params);
+		_.assign(this, { baseUrl, tokenPath, client_id, keyfile, key, defaultHeaders });
 		this.default_headers = Object.assign({
 			'Accept':       'application/json',
 			'Content-Type': 'application/x-www-form-urlencoded',
-		  }, params.defaultHeaders);
+		  }, defaultHeaders);
 
 		this.owner = new Owner(this);
 
