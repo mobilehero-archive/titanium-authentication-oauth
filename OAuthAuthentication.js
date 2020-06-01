@@ -51,6 +51,9 @@ class OAuthAuthentication {
 		// DEBUG: access_token_expires_in
 		turbo.debug(`🦠  access_token_expires_in: ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
 
+		// DEBUG: this.access_token_expires_at.fromNow()
+		turbo.debug(`🦠  this.access_token_expires_at.fromNow(): ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
+
 		return moment().isSameOrBefore(this.access_token_expires_at.subtract(1, 'minutes'));
 	}
 
@@ -66,7 +69,7 @@ class OAuthAuthentication {
 		return moment.unix(expires_at);
 	}
 
-	access_token_expires_in() {
+	get access_token_expires_in() {
 		return this.access_token_expires_at.fromNow();
 	}
 
