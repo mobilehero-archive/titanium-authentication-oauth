@@ -4,8 +4,9 @@ const moment = require('moment');
 class OAuthAuthentication {
 	constructor(options) {
 		turbo.trace('🔒  you are here →   OAuthAuthentication.constructor');
-		this.oauth = new OAuth(options);
-
+		if (options) {
+			this.oauth = new OAuth(options);
+		}
 	 }
 
 	async authenticate({ username, password }) {
