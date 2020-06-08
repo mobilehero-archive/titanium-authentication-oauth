@@ -20,11 +20,11 @@ class Token {
 
 			this.authenticated = true;
 			this.user = {
-				username:       this.access_token_jwt.username,
+				username:       this.access_token_jwt.username || this.access_token_jwt.preferred_username,
 				first_name:     this.access_token_jwt.given_name,
 				last_name:      this.access_token_jwt.family_name,
 				formatted_name: this.access_token_jwt.name,
-				email:          this.access_token_jwt.email || this.access_token_jwt.preferred_username,
+				email:          this.access_token_jwt.email,
 				scopes:         _.split(_.trim(this.access_token_jwt.scope || ''), /\s*/g).filter(o => o),
 			};
 			this.issuer = this.access_token_jwt.iss;
