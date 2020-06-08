@@ -9,10 +9,11 @@ class Token {
 		this.access_token = data.access_token;
 		this.refresh_token = data.refresh_token;
 		this.parseExpiresIn(Number(data.expires_in));
-		this.data = _.omit(data, [ 'token_type', 'access_token', 'refresh_token', 'expires_in' ]);
+		this.raw = _.omit(data, [ 'token_type', 'access_token', 'refresh_token', 'expires_in' ]);
 
 
 		this.access_token_jwt = jsonwebtoken.decode(this.access_token, params.key);
+		this.refresh_token_jwt = jsonwebtoken.decode(this.refresh_token, params.key);
 		// console.debug(`this.jwt: ${JSON.stringify(this.jwt, null, 2)}`);
 
 		if (this.access_token_jwt) {
@@ -23,7 +24,7 @@ class Token {
 				first_name:     this.access_token_jwt.given_name,
 				last_name:      this.access_token_jwt.family_name,
 				formatted_name: this.access_token_jwt.name,
-				email:          this.access_token_jwt.email,
+				email:          this.access_token_jwt.email || this.access_token_jwt.preferred_username,
 				scopes:         _.split(_.trim(this.access_token_jwt.scope || ''), /\s*/g).filter(o => o),
 			};
 			this.issuer = this.access_token_jwt.iss;

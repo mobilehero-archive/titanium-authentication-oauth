@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const querystring = require('querystring');
-const Token = require('../token');
+const Token = require('../Token');
 const Please = require('@titanium/please');
 class Owner {
 	constructor({ baseUrl = '', tokenPath, client_id, client_secret, default_headers, key}) {
