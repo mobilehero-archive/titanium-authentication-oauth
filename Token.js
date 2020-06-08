@@ -13,7 +13,7 @@ class Token {
 
 
 		this.access_token_jwt = jsonwebtoken.decode(this.access_token, params.key);
-		this.refresh_token_jwt = jsonwebtoken.decode(this.refresh_token, params.key);
+		this.refresh_token_jwt = jsonwebtoken.decode(this.refresh_token, null, true);
 		// console.debug(`this.jwt: ${JSON.stringify(this.jwt, null, 2)}`);
 
 		if (this.access_token_jwt) {
