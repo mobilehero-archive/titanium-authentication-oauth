@@ -47,22 +47,22 @@ class OAuthAuthentication {
 		}
 
 		// DEBUG: access_token_expires_at
-		turbo.debug(`🔑  access_token_expires_at: ${JSON.stringify(this.access_token_expires_at, null, 2)}`);
+		turbo.debug(`🔑 \x1b[43m access_token_expires_at:\x1b[0m  ${JSON.stringify(this.access_token_expires_at, null, 2)}`);
 
 		// DEBUG: access_token_expires_in
-		turbo.debug(`🔑  access_token_expires_in: ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
+		turbo.debug(`🔑 \x1b[43m access_token_expires_in:\x1b[0m  ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
 
 		// DEBUG: this.access_token_expires_at.fromNow()
-		turbo.debug(`🔑  this.access_token_expires_at.fromNow(): ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
+		turbo.debug(`🔑 \x1b[43m this.access_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
 
 		// DEBUG: refresh_token_expires_at
-		turbo.debug(`🔑  refresh_token_expires_at: ${JSON.stringify(this.refresh_token_expires_at, null, 2)}`);
+		turbo.debug(`🔑 \x1b[43m refresh_token_expires_at:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at, null, 2)}`);
 
 		// DEBUG: refresh_token_expires_in
-		turbo.debug(`🔑  refresh_token_expires_in: ${JSON.stringify(this.refresh_token_expires_in, null, 2)}`);
+		turbo.debug(`🔑 \x1b[43m refresh_token_expires_in:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_in, null, 2)}`);
 
 		// DEBUG: this.refresh_token_expires_at.fromNow()
-		turbo.debug(`🔑  this.refresh_token_expires_at.fromNow(): ${JSON.stringify(this.refresh_token_expires_at.fromNow(), null, 2)}`);
+		turbo.debug(`🔑 \x1b[43m this.refresh_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at.fromNow(), null, 2)}`);
 
 
 		let isAccessTokenExpired = moment().isSameOrAfter(this.access_token_expires_at.subtract(1, 'minutes'));
