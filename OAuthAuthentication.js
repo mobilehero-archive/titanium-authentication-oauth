@@ -69,12 +69,17 @@ class OAuthAuthentication {
 
 		if (isAccessTokenExpired) {
 
-			// is refresh token expired?
-			if (moment().isSameOrAfter(this.refresh_token_expires_at.subtract(1, 'minutes'))) {
+			const isRefreshTokenExpired = moment().isSameOrAfter(this.refresh_token_expires_at.subtract(1, 'minutes'));
+			turbo.debug(`🦠  isRefreshTokenExpired: ${JSON.stringify(isRefreshTokenExpired, null, 2)}`);
+
+			if (isRefreshTokenExpired) {
 				return false;
 			}
 			await this.refreshAccessToken();
 			isAccessTokenExpired = moment().isSameOrAfter(this.access_token_expires_at.subtract(1, 'minutes'));
+
+			turbo.debug(`🦠  isAccessTokenExpired: ${JSON.stringify(isAccessTokenExpired, null, 2)}`);
+
 			return !isAccessTokenExpired;
 		} else {
 			return false;
