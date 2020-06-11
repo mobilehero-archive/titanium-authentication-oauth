@@ -55,7 +55,15 @@ class OAuthAuthentication {
 		// DEBUG: this.access_token_expires_at.fromNow()
 		turbo.debug(`🦠  this.access_token_expires_at.fromNow(): ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
 
-		return moment().isSameOrBefore(this.access_token_expires_at.subtract(1, 'minutes'));
+		let isAuthenticated = moment().isSameOrBefore(this.access_token_expires_at.subtract(1, 'minutes'));
+
+		if (!isAuthenticated) {
+			await this.refreshAccessToken();
+			isAuthenticated = moment().isSameOrBefore(this.access_token_expires_at.subtract(1, 'minutes'));
+			return isAuthenticated;
+		} else {
+			return false;
+		}
 	}
 
 	get access_token_issued_at() {
@@ -72,6 +80,10 @@ class OAuthAuthentication {
 
 	get access_token_expires_in() {
 		return this.access_token_expires_at.fromNow();
+	}
+
+	refreshAccessToken() {
+
 	}
 
 }
