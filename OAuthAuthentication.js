@@ -47,13 +47,24 @@ class OAuthAuthentication {
 		}
 
 		// DEBUG: access_token_expires_at
-		turbo.debug(`🦠  access_token_expires_at: ${JSON.stringify(this.access_token_expires_at, null, 2)}`);
+		turbo.debug(`🔑  access_token_expires_at: ${JSON.stringify(this.access_token_expires_at, null, 2)}`);
 
 		// DEBUG: access_token_expires_in
-		turbo.debug(`🦠  access_token_expires_in: ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
+		turbo.debug(`🔑  access_token_expires_in: ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
 
 		// DEBUG: this.access_token_expires_at.fromNow()
-		turbo.debug(`🦠  this.access_token_expires_at.fromNow(): ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
+		turbo.debug(`🔑  this.access_token_expires_at.fromNow(): ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
+
+		// DEBUG: refresh_token_expires_at
+		turbo.debug(`🔑  refresh_token_expires_at: ${JSON.stringify(this.refresh_token_expires_at, null, 2)}`);
+
+		// DEBUG: refresh_token_expires_in
+		turbo.debug(`🔑  refresh_token_expires_in: ${JSON.stringify(this.refresh_token_expires_in, null, 2)}`);
+
+		// DEBUG: this.refresh_token_expires_at.fromNow()
+		turbo.debug(`🔑  this.refresh_token_expires_at.fromNow(): ${JSON.stringify(this.refresh_token_expires_at.fromNow(), null, 2)}`);
+
+
 
 		let isAuthenticated = moment().isSameOrBefore(this.access_token_expires_at.subtract(1, 'minutes'));
 
@@ -81,6 +92,23 @@ class OAuthAuthentication {
 	get access_token_expires_in() {
 		return this.access_token_expires_at.fromNow();
 	}
+
+	get refresh_token_issued_at() {
+		const issued_at = _.get(turbo, 'data.current_auth.refresh_token_jwt.iat', 0);
+
+		return  moment.unix(issued_at);
+	}
+
+	get refresh_token_expires_at() {
+		const expires_at = _.get(turbo, 'data.current_auth.refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
+
+		return moment.unix(expires_at);
+	}
+
+	get refresh_token_expires_in() {
+		return this.refresh_token_expires_at.fromNow();
+	}
+
 
 	refreshAccessToken() {
 
