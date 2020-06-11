@@ -40,7 +40,7 @@ class OAuthAuthentication {
 
 	async isAuthenticated() {
 
-		turbo.trace('📌  You are here → OAuthAuthentication.isAuthenticated)');
+		turbo.trace('📌  You are here → OAuthAuthentication.isAuthenticated()');
 
 		if (_.isNil(turbo.data.current_auth)) {
 			return false;
@@ -70,19 +70,17 @@ class OAuthAuthentication {
 		if (isAccessTokenExpired) {
 
 			const isRefreshTokenExpired = moment().isSameOrAfter(this.refresh_token_expires_at.subtract(1, 'minutes'));
-			turbo.debug(`🦠  isRefreshTokenExpired: ${JSON.stringify(isRefreshTokenExpired, null, 2)}`);
+			// turbo.debug(`🦠  isRefreshTokenExpired: ${JSON.stringify(isRefreshTokenExpired, null, 2)}`);
 
 			if (isRefreshTokenExpired) {
 				return false;
 			}
 			await this.refreshAccessToken();
 			isAccessTokenExpired = moment().isSameOrAfter(this.access_token_expires_at.subtract(1, 'minutes'));
-
-			turbo.debug(`🦠  isAccessTokenExpired: ${JSON.stringify(isAccessTokenExpired, null, 2)}`);
-
+			// turbo.debug(`🦠  isAccessTokenExpired: ${JSON.stringify(isAccessTokenExpired, null, 2)}`);
 			return !isAccessTokenExpired;
 		} else {
-			return false;
+			return true;
 		}
 	}
 
