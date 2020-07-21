@@ -42,7 +42,7 @@ class OAuthAuthentication {
 
 		turbo.trace('📌  You are here → OAuthAuthentication.isAuthenticated()');
 
-		if (_.isNil(turbo.data.current_auth)) {
+		if (_.isNil(_.get(turbo, 'app.data.current_auth'))) {
 			return false;
 		}
 
@@ -85,13 +85,13 @@ class OAuthAuthentication {
 	}
 
 	get access_token_issued_at() {
-		const issued_at = _.get(turbo, 'data.current_auth.access_token_jwt.iat', 0);
+		const issued_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.iat', 0);
 
 		return  moment.unix(issued_at);
 	}
 
 	get access_token_expires_at() {
-		const expires_at = _.get(turbo, 'data.current_auth.access_token_jwt.exp', moment().subtract(1, 'days').unix());
+		const expires_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.exp', moment().subtract(1, 'days').unix());
 
 		return moment.unix(expires_at);
 	}
@@ -101,13 +101,13 @@ class OAuthAuthentication {
 	}
 
 	get refresh_token_issued_at() {
-		const issued_at = _.get(turbo, 'data.current_auth.refresh_token_jwt.iat', 0);
+		const issued_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.iat', 0);
 
 		return  moment.unix(issued_at);
 	}
 
 	get refresh_token_expires_at() {
-		const expires_at = _.get(turbo, 'data.current_auth.refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
+		const expires_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
 
 		return moment.unix(expires_at);
 	}
