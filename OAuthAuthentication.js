@@ -1,48 +1,93 @@
-const OAuth = require('./oauth');
+// const OAuth = require('./oauth');
 const moment = require('moment');
 
 class OAuthAuthentication {
-	constructor(options) {
+	constructor(flowName, options = {}) {
 		turbo.trace('🔒  you are here →   OAuthAuthentication.constructor');
-		if (options) {
-			this.oauth = new OAuth(options);
+
+		let Flow;
+		switch (flowName) {
+			case 'code':
+				// TIBUG:  https://jira.appcelerator.org/browse/TIMOB-28037
+				// Flow = require('./flows/CodeFlow');
+				Flow = require(`${__dirname}/flows/Code`);
+				break;
+
+			case 'password':
+				// TIBUG:  https://jira.appcelerator.org/browse/TIMOB-28037
+				// Flow = require('./flows/OwnerResourceFlow');
+				Flow = require(`${__dirname}/flows/Password`);
+				break;
+
+			default:
+
 		}
+		this.flow = new Flow(options);
+
+		// if (options) {
+		// 	this.oauth = new OAuth(options);
+		// }
 	 }
 
-	async authenticate({ username, password }) {
-		turbo.trace('🔒  you are here →   OAuthAuthentication.authenticate');
-		try {
-			const token = await this.oauth.owner.getToken({ username, password });
-			turbo.debug(`🦠  token: ${JSON.stringify(token, null, 2)}`);
+	// async authenticate({ username, password }) {
+	// 	turbo.trace('🔒  you are here →   OAuthAuthentication.authenticate');
+	// 	try {
+	// 		const token = await this.oauth.owner.getToken({ username, password });
+	// 		turbo.debug(`🦠  token: ${JSON.stringify(token, null, 2)}`);
 
-			// response.user = {
-			// 	username:       token.username,
-			// 	first_name:     token.given_name,
-			// 	last_name:      token.family_name,
-			// 	formatted_name: token.name,
-			// 	email:          token.email,
-			// };
-			// response.token = token;
-			// return response;
+	// 		// response.user = {
+	// 		// 	username:       token.username,
+	// 		// 	first_name:     token.given_name,
+	// 		// 	last_name:      token.family_name,
+	// 		// 	formatted_name: token.name,
+	// 		// 	email:          token.email,
+	// 		// };
+	// 		// response.token = token;
+	// 		// return response;
 
-			return token;
+	// 		return token;
 
-		} catch (error) {
+	// 	} catch (error) {
 
-			console.error(`🛑  error: ${JSON.stringify(error, null, 2)}`);
-			console.error(error);
-			return {
-				authenticated: false,
-				scopes:        [],
-			};
-		}
+	// 		console.error(`🛑  error: ${JSON.stringify(error, null, 2)}`);
+	// 		console.error(error);
+	// 		return {
+	// 			authenticated: false,
+	// 			scopes:        [],
+	// 		};
+	// 	}
+	// }
+
+	async logout(...args) {
+		turbo.trace('🔒  You are here → OAuthAuthentication.logout()');
+		return this.flow.logout(...args);
 	}
 
-	async isAuthenticated() {
+	async renew(...args) {
+		turbo.trace('🔒  you are here → OAuthAuthentication.renew()');
+		return this.flow.refreshAccessToken(...args);
+	}
 
-		turbo.trace('📌  You are here → OAuthAuthentication.isAuthenticated()');
+	async getToken() {
+		turbo.trace('🔒  you are here → OAuthAuthentication.getToken()');
+		return this.flow.getToken();
+	}
 
-		if (_.isNil(_.get(turbo, 'app.data.current_auth'))) {
+	async authenticate() {
+		turbo.trace('🔒  you are here → OAuthAuthentication.authenticate()');
+		return this.flow.getToken();
+	}
+
+
+	async isAuthenticated(token) {
+
+		turbo.trace('🔒  You are here → OAuthAuthentication.isAuthenticated()');
+
+		this.token = token;
+		// if (_.isNil(_.get(turbo, 'app.data.current_auth'))) {
+		// 	return false;
+		// }
+		if (_.isNil(token)) {
 			return false;
 		}
 
@@ -84,14 +129,17 @@ class OAuthAuthentication {
 		}
 	}
 
+
 	get access_token_issued_at() {
-		const issued_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.iat', 0);
+		// const issued_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.iat', 0);
+		const issued_at = _.get(this.token, 'access_token_jwt.iat', 0);
 
 		return  moment.unix(issued_at);
 	}
 
 	get access_token_expires_at() {
-		const expires_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.exp', moment().subtract(1, 'days').unix());
+		// const expires_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.exp', moment().subtract(1, 'days').unix());
+		const expires_at = _.get(this.token, 'access_token_jwt.exp', moment().subtract(1, 'days').unix());
 
 		return moment.unix(expires_at);
 	}
@@ -101,13 +149,15 @@ class OAuthAuthentication {
 	}
 
 	get refresh_token_issued_at() {
-		const issued_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.iat', 0);
+		// const issued_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.iat', 0);
+		const issued_at = _.get(this.token, 'refresh_token_jwt.iat', 0);
 
 		return  moment.unix(issued_at);
 	}
 
 	get refresh_token_expires_at() {
-		const expires_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
+		// const expires_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
+		const expires_at = _.get(this.token, 'refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
 
 		return moment.unix(expires_at);
 	}

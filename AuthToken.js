@@ -2,9 +2,9 @@ const jsonwebtoken = require('@titanium/jwt');
 const _ = require('lodash');
 const moment = require('moment');
 
-class Token {
+class AuthToken {
 	constructor(data, params = {}) {
-		turbo.trace('🔒  you are here →   token.constructor');
+		turbo.trace('🔒  you are here →   AuthToken.constructor');
 		this.token_type = data.token_type && data.token_type.toLowerCase();
 		this.access_token = data.access_token;
 		this.refresh_token = data.refresh_token;
@@ -62,4 +62,4 @@ class Token {
 
 }
 
-module.exports = Token;
+module.exports = AuthToken;

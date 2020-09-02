@@ -2,9 +2,10 @@ const _ = require('lodash');
 const querystring = require('querystring');
 const Token = require('../Token');
 const Please = require('@titanium/please');
-class Owner {
+
+class Password {
 	constructor({ baseUrl = '', tokenPath, client_id, client_secret, default_headers, key}) {
-		turbo.trace('🔒  you are here →   oauth.flows.owner.constructor');
+		turbo.trace('🔒  you are here →   oauth.flows.password.constructor');
 		this.baseUrl = baseUrl;
 		this.endpoint = this.baseUrl + tokenPath;
 		this.client_id = client_id;
@@ -13,11 +14,41 @@ class Owner {
 		this.key = key;
 
 		// console.debug(`params: ${JSON.stringify(params, null, 2)}`);
-		turbo.debug(`OAuth.Owner: ${JSON.stringify(this, null, 2)}`);
+		// turbo.debug(`OAuth.Password: ${JSON.stringify(this, null, 2)}`);
 	}
 
+	async authenticate({ username, password }) {
+		turbo.trace('🔒  you are here →   Password.authenticate');
+		try {
+			const token = await this.getToken({ username, password });
+			turbo.debug(`🦠  token: ${JSON.stringify(token, null, 2)}`);
+
+			// response.user = {
+			// 	username:       token.username,
+			// 	first_name:     token.given_name,
+			// 	last_name:      token.family_name,
+			// 	formatted_name: token.name,
+			// 	email:          token.email,
+			// };
+			// response.token = token;
+			// return response;
+
+			return token;
+
+		} catch (error) {
+
+			console.error(`🛑  error: ${JSON.stringify(error, null, 2)}`);
+			console.error(error);
+			return {
+				authenticated: false,
+				scopes:        [],
+			};
+		}
+	}
+
+
 	async getToken(options = {}) {
-		turbo.trace('🔒  you are here →   oauth.flows.owner.getToken');
+		turbo.trace('🔒  you are here →   oauth.flows.password.getToken');
 		const login_info = {...options};
 		const {username, password} = login_info;
 		// console.debug(`options: ${JSON.stringify(options, null, 2)}`);
@@ -45,13 +76,13 @@ class Owner {
 		const please = new Please(client_options);
 
 		const response = await please.post();
-		turbo.trace('🔒  you are here → owner.getToken.response');
+		turbo.trace('🔒  you are here → oauth.password.getToken.response');
 
 		const body = response.json;
 
 		const authError = this.getAuthError(response);
 		if (authError) {
-			turbo.trace('🔒  you are here → owner.getToken.authError');
+			turbo.trace('🔒  you are here → oauth.password.getToken.authError');
 			return Promise.reject(authError);
 		}
 
@@ -60,7 +91,7 @@ class Owner {
 		return token;
 			// });
 		// .catch(error => {
-		// 	console.debug('you are here → owner.getToken error');
+		// 	console.debug('you are here → oauth.password.getToken error');
 		// 	console.error(error);
 		// 	console.debug(`typeof error: ${JSON.stringify(typeof error, null, 2)}`);
 		// 	console.debug(`error: ${error.toJSON()}`);
@@ -116,4 +147,4 @@ const ERROR_RESPONSES = {
 	temporarily_unavailable: 'The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.',
 };
 
-module.exports = Owner;
+module.exports = Password;

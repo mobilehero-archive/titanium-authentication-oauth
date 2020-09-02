@@ -40,11 +40,7 @@ npm install @titanium/authentication-oauth
 
 ### Usage
 
-Add `@titanium/authentication-oauth` to Alloy config.
 
-```javascript
-
-```
 
 
 ## 🔗 Related Links
