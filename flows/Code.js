@@ -5,6 +5,7 @@
 const Please = require('@titanium/please');
 const fs = require('fs');
 const path = require('path');
+const logger = require('@geek/logger');
 
 const AuthenticationToken = require('../AuthToken');
 
@@ -92,15 +93,15 @@ class Code {
 	}
 
 	async getToken() {
-		turbo.trace('🔒  you are here → oauth.code.getToken()');
+		logger.track('🔒  you are here → oauth.code.getToken()');
 
-		// turbo.debug(`🦠  auth_endpoint: ${JSON.stringify(this.auth_endpoint, null, 2)}`);
+		// logger.debug(`🦠  auth_endpoint: ${JSON.stringify(this.auth_endpoint, null, 2)}`);
 
 		return new Promise((resolve, reject) => {
 			const state = generateGUID();
 			const next = async (err, code) => {
-				turbo.trace('🔒  you are here → oauth.code.getToken().next()');
-				turbo.debug(`🦠  oauth code: ${JSON.stringify(code, null, 2)}`);
+				logger.track('🔒  you are here → oauth.code.getToken().next()');
+				logger.debug(`🦠  oauth code: ${JSON.stringify(code, null, 2)}`);
 
 				turbo.openLoadingScreen();
 
@@ -133,7 +134,7 @@ class Code {
 						.post(this.token_endpoint);
 					// this.storeInformation(auth);
 
-					turbo.trace('📌  you are here → firing event: authentication::success::code');
+					logger.track('📌  you are here → firing event: authentication::success::code');
 					turbo.events.fire('authentication::success::code');
 					Alloy.close('login-required');
 					const auth_token = new AuthenticationToken(auth.json, { key: this.public_key });
@@ -155,13 +156,13 @@ class Code {
 				state,
 			});
 
-			turbo.debug(`🦠  url: ${JSON.stringify(url, null, 2)}`);
+			logger.debug(`🦠  url: ${JSON.stringify(url, null, 2)}`);
 
 			const handleUrl = async eventData => {
 				let launchInformation;
 
-				turbo.debug(`🦠  eventData: ${JSON.stringify(eventData, null, 2)}`);
-				turbo.debug(`🦠  launchInformation: ${JSON.stringify(launchInformation, null, 2)}`);
+				logger.debug(`🦠  eventData: ${JSON.stringify(eventData, null, 2)}`);
+				logger.debug(`🦠  launchInformation: ${JSON.stringify(launchInformation, null, 2)}`);
 
 				// Extract the URL out of the event data
 				if (OS_ANDROID) {
@@ -221,7 +222,7 @@ class Code {
 
 
 			turbo.events.once('codeflow::open::dialog', e => {
-				turbo.trace('🔒  you are here → opening webdialog');
+				logger.track('🔒  you are here → opening webdialog');
 				webdialog.open(webdialogOptions);
 			});
 
@@ -231,7 +232,7 @@ class Code {
 	}
 
 	async refreshAccessToken(token) {
-		turbo.trace('🔒  you are here → oauth.code.refreshAccessToken()');
+		logger.track('🔒  you are here → oauth.code.refreshAccessToken()');
 
 		const auth_token = token || this.auth_token;
 
@@ -262,7 +263,7 @@ class Code {
 	}
 
 	async logout(token) {
-		turbo.trace('📌  you are here → oauth.code.logout()');
+		logger.track('📌  you are here → oauth.code.logout()');
 
 		// clearInterval(turbo.refresh_token_timer);
 		// turbo.refresh_token_timer = null;

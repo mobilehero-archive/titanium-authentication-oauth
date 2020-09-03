@@ -1,10 +1,11 @@
 const jsonwebtoken = require('@titanium/jwt');
 const _ = require('lodash');
 const moment = require('moment');
+const logger = require('@geek/logger');
 
 class AuthToken {
 	constructor(data, params = {}) {
-		turbo.trace('🔒  you are here →   AuthToken.constructor');
+		logger.track('🔒  you are here →   AuthToken.constructor');
 		this.token_type = data.token_type && data.token_type.toLowerCase();
 		this.access_token = data.access_token;
 		this.refresh_token = data.refresh_token;

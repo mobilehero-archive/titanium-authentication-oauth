@@ -2,10 +2,11 @@ const _ = require('lodash');
 const querystring = require('querystring');
 const Token = require('../Token');
 const Please = require('@titanium/please');
+const logger = require('@geek/logger');
 
 class Password {
 	constructor({ baseUrl = '', tokenPath, client_id, client_secret, default_headers, key}) {
-		turbo.trace('🔒  you are here →   oauth.flows.password.constructor');
+		logger.track('🔒  you are here →   oauth.flows.password.constructor');
 		this.baseUrl = baseUrl;
 		this.endpoint = this.baseUrl + tokenPath;
 		this.client_id = client_id;
@@ -14,14 +15,14 @@ class Password {
 		this.key = key;
 
 		// console.debug(`params: ${JSON.stringify(params, null, 2)}`);
-		// turbo.debug(`OAuth.Password: ${JSON.stringify(this, null, 2)}`);
+		// logger.debug(`OAuth.Password: ${JSON.stringify(this, null, 2)}`);
 	}
 
 	async authenticate({ username, password }) {
-		turbo.trace('🔒  you are here →   Password.authenticate');
+		logger.track('🔒  you are here →   Password.authenticate');
 		try {
 			const token = await this.getToken({ username, password });
-			turbo.debug(`🦠  token: ${JSON.stringify(token, null, 2)}`);
+			logger.debug(`🦠  token: ${JSON.stringify(token, null, 2)}`);
 
 			// response.user = {
 			// 	username:       token.username,
@@ -48,7 +49,7 @@ class Password {
 
 
 	async getToken(options = {}) {
-		turbo.trace('🔒  you are here →   oauth.flows.password.getToken');
+		logger.track('🔒  you are here →   oauth.flows.password.getToken');
 		const login_info = {...options};
 		const {username, password} = login_info;
 		// console.debug(`options: ${JSON.stringify(options, null, 2)}`);
@@ -76,13 +77,13 @@ class Password {
 		const please = new Please(client_options);
 
 		const response = await please.post();
-		turbo.trace('🔒  you are here → oauth.password.getToken.response');
+		logger.track('🔒  you are here → oauth.password.getToken.response');
 
 		const body = response.json;
 
 		const authError = this.getAuthError(response);
 		if (authError) {
-			turbo.trace('🔒  you are here → oauth.password.getToken.authError');
+			logger.track('🔒  you are here → oauth.password.getToken.authError');
 			return Promise.reject(authError);
 		}
 

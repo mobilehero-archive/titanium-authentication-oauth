@@ -4,7 +4,7 @@ const Owner = require('./flows/owner');
 class OAuth {
 
 	constructor({ baseUrl, tokenPath, client_id, keyfile, key, defaultHeaders } = {}) {
-		turbo.trace('🔒  you are here →  OAuth.constructor()');
+		logger.track('🔒  you are here →  OAuth.constructor()');
 
 		if (keyfile) {
 			key = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, keyfile).read().text;

@@ -1,9 +1,10 @@
 // const OAuth = require('./oauth');
 const moment = require('moment');
+const logger = require('@geek/logger');
 
 class OAuthAuthentication {
 	constructor(flowName, options = {}) {
-		turbo.trace('🔒  you are here →   OAuthAuthentication.constructor');
+		logger.track('🔒  you are here →   OAuthAuthentication.constructor');
 
 		let Flow;
 		switch (flowName) {
@@ -30,10 +31,10 @@ class OAuthAuthentication {
 	 }
 
 	// async authenticate({ username, password }) {
-	// 	turbo.trace('🔒  you are here →   OAuthAuthentication.authenticate');
+	// 	logger.track('🔒  you are here →   OAuthAuthentication.authenticate');
 	// 	try {
 	// 		const token = await this.oauth.owner.getToken({ username, password });
-	// 		turbo.debug(`🦠  token: ${JSON.stringify(token, null, 2)}`);
+	// 		logger.debug(`🦠  token: ${JSON.stringify(token, null, 2)}`);
 
 	// 		// response.user = {
 	// 		// 	username:       token.username,
@@ -59,29 +60,29 @@ class OAuthAuthentication {
 	// }
 
 	async logout(...args) {
-		turbo.trace('🔒  You are here → OAuthAuthentication.logout()');
+		logger.track('🔒  You are here → OAuthAuthentication.logout()');
 		return this.flow.logout(...args);
 	}
 
 	async renew(...args) {
-		turbo.trace('🔒  you are here → OAuthAuthentication.renew()');
+		logger.track('🔒  you are here → OAuthAuthentication.renew()');
 		return this.flow.refreshAccessToken(...args);
 	}
 
 	async getToken() {
-		turbo.trace('🔒  you are here → OAuthAuthentication.getToken()');
+		logger.track('🔒  you are here → OAuthAuthentication.getToken()');
 		return this.flow.getToken();
 	}
 
 	async authenticate() {
-		turbo.trace('🔒  you are here → OAuthAuthentication.authenticate()');
+		logger.track('🔒  you are here → OAuthAuthentication.authenticate()');
 		return this.flow.getToken();
 	}
 
 
 	async isAuthenticated(token) {
 
-		turbo.trace('🔒  You are here → OAuthAuthentication.isAuthenticated()');
+		logger.track('🔒  You are here → OAuthAuthentication.isAuthenticated()');
 
 		this.token = token;
 		// if (_.isNil(_.get(turbo, 'app.data.current_auth'))) {
@@ -92,22 +93,22 @@ class OAuthAuthentication {
 		}
 
 		// DEBUG: access_token_expires_at
-		turbo.debug(`🔑 \x1b[43m access_token_expires_at:\x1b[0m  ${JSON.stringify(this.access_token_expires_at, null, 2)}`);
+		logger.debug(`🔑 \x1b[43m access_token_expires_at:\x1b[0m  ${JSON.stringify(this.access_token_expires_at, null, 2)}`);
 
 		// DEBUG: access_token_expires_in
-		turbo.debug(`🔑 \x1b[43m access_token_expires_in:\x1b[0m  ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
+		logger.debug(`🔑 \x1b[43m access_token_expires_in:\x1b[0m  ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
 
 		// DEBUG: this.access_token_expires_at.fromNow()
-		turbo.debug(`🔑 \x1b[43m this.access_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
+		logger.debug(`🔑 \x1b[43m this.access_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
 
 		// DEBUG: refresh_token_expires_at
-		turbo.debug(`🔑 \x1b[43m refresh_token_expires_at:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at, null, 2)}`);
+		logger.debug(`🔑 \x1b[43m refresh_token_expires_at:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at, null, 2)}`);
 
 		// DEBUG: refresh_token_expires_in
-		turbo.debug(`🔑 \x1b[43m refresh_token_expires_in:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_in, null, 2)}`);
+		logger.debug(`🔑 \x1b[43m refresh_token_expires_in:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_in, null, 2)}`);
 
 		// DEBUG: this.refresh_token_expires_at.fromNow()
-		turbo.debug(`🔑 \x1b[43m this.refresh_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at.fromNow(), null, 2)}`);
+		logger.debug(`🔑 \x1b[43m this.refresh_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at.fromNow(), null, 2)}`);
 
 
 		let isAccessTokenExpired = moment().isSameOrAfter(this.access_token_expires_at.subtract(1, 'minutes'));
@@ -115,14 +116,14 @@ class OAuthAuthentication {
 		if (isAccessTokenExpired) {
 
 			const isRefreshTokenExpired = moment().isSameOrAfter(this.refresh_token_expires_at.subtract(1, 'minutes'));
-			// turbo.debug(`🦠  isRefreshTokenExpired: ${JSON.stringify(isRefreshTokenExpired, null, 2)}`);
+			// logger.debug(`🦠  isRefreshTokenExpired: ${JSON.stringify(isRefreshTokenExpired, null, 2)}`);
 
 			if (isRefreshTokenExpired) {
 				return false;
 			}
 			await this.refreshAccessToken();
 			isAccessTokenExpired = moment().isSameOrAfter(this.access_token_expires_at.subtract(1, 'minutes'));
-			// turbo.debug(`🦠  isAccessTokenExpired: ${JSON.stringify(isAccessTokenExpired, null, 2)}`);
+			// logger.debug(`🦠  isAccessTokenExpired: ${JSON.stringify(isAccessTokenExpired, null, 2)}`);
 			return !isAccessTokenExpired;
 		} else {
 			return true;
