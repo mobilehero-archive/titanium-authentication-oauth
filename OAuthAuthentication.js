@@ -11,13 +11,13 @@ class OAuthAuthentication {
 			case 'code':
 				// TIBUG:  https://jira.appcelerator.org/browse/TIMOB-28037
 				// Flow = require('./flows/CodeFlow');
-				Flow = require(`${__dirname}/flows/Code`);
+				Flow = require(`./flows/Code`);
 				break;
 
 			case 'password':
 				// TIBUG:  https://jira.appcelerator.org/browse/TIMOB-28037
 				// Flow = require('./flows/OwnerResourceFlow');
-				Flow = require(`${__dirname}/flows/Password`);
+				Flow = require(`./flows/Password`);
 				break;
 
 			default:
