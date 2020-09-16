@@ -5,7 +5,7 @@
 const Please = require('@titanium/please');
 const fs = require('fs');
 const path = require('path');
-const logger = require('@geek/logger');
+const logger = require('@geek/logger').createLogger('@titanium/authentication-oauth', { meta: { filename: __filename } });
 
 const AuthenticationToken = require('../AuthToken');
 

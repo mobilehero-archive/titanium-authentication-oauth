@@ -2,7 +2,7 @@ const _ = require('lodash');
 const querystring = require('querystring');
 const Token = require('../Token');
 const Please = require('@titanium/please');
-const logger = require('@geek/logger');
+const logger = require('@geek/logger').createLogger('@titanium/authentication-oauth', { meta: { filename: __filename } });
 
 class Password {
 	constructor({ baseUrl = '', tokenPath, client_id, client_secret, default_headers, key}) {

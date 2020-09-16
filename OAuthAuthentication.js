@@ -1,6 +1,6 @@
 // const OAuth = require('./oauth');
 const moment = require('moment');
-const logger = require('@geek/logger');
+const logger = require('@geek/logger').createLogger('@titanium/authentication-oauth', { meta: { filename: __filename } });
 
 class OAuthAuthentication {
 	constructor(flowName, options = {}) {
