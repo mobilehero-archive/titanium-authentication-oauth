@@ -8,7 +8,7 @@ class AuthToken {
 	constructor(data, params = {}) {
 		logger.track('🔒  you are here →   AuthToken.constructor');
 
-		logger.debug(`🦠  AuthToken.data: ${JSON.stringify(data, null, 2)}`);
+		// logger.verbose(`🦠  AuthToken.data: ${JSON.stringify(data, null, 2)}`);
 
 		this.token_type = data.token_type && data.token_type.toLowerCase();
 

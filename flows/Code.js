@@ -158,7 +158,7 @@ class Code {
 				state,
 			});
 
-			logger.debug(`🦠  url: ${JSON.stringify(url, null, 2)}`);
+			logger.debug(`🦠 auth endpoint url: ${JSON.stringify(url, null, 2)}`);
 
 			const handleUrl = async eventData => {
 				let launchInformation;
