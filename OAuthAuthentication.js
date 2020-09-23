@@ -2,6 +2,8 @@
 const moment = require('moment');
 const logger = require('@geek/logger').createLogger('@titanium/authentication-oauth', { meta: { filename: __filename } });
 
+const TOKEN = Symbol('token');
+
 class OAuthAuthentication {
 	constructor(flowName, options = {}) {
 		logger.track('🔒  you are here →   OAuthAuthentication.constructor');
@@ -23,7 +25,24 @@ class OAuthAuthentication {
 			default:
 
 		}
+
+		if( options.token ) {
+			if( ! options.token instanceof OAuthAuthentication.AuthToken ){
+				logger.warn('Token is not an instance of AuthToken.');
+				options.token = new OAuthAuthentication.AuthToken(options.token);
+
+			}
+			this[TOKEN] = options.token;
+		}
+
 		this.flow = new Flow(options);
+
+		Object.defineProperty(this, 'token', {
+			enumerable: true,
+			get () {
+				return this[TOKEN];
+			},
+		});
 
 		// if (options) {
 		// 	this.oauth = new OAuth(options);
@@ -61,117 +80,151 @@ class OAuthAuthentication {
 
 	async logout(...args) {
 		logger.track('🔒  You are here → OAuthAuthentication.logout()');
-		return this.flow.logout(...args);
+		await this.flow.logout(...args);
+		this[TOKEN] = null;
 	}
 
 	async renew(...args) {
 		logger.track('🔒  you are here → OAuthAuthentication.renew()');
-		return this.flow.refreshAccessToken(...args);
+		this[TOKEN] = await this.flow.renewAccessToken(...args);
+		return this[TOKEN];
 	}
 
-	async getToken() {
-		logger.track('🔒  you are here → OAuthAuthentication.getToken()');
-		return this.flow.getToken();
-	}
-
-	async authenticate() {
+	async authenticate(...args) {
 		logger.track('🔒  you are here → OAuthAuthentication.authenticate()');
-		return this.flow.getToken();
+		this[TOKEN] = await this.flow.authenticate(...args);
+		return this[TOKEN];
 	}
 
+	// async getAuthToken() {
+
+	// 	// if( ! this.token instanceof OAuthAuthentication.AuthToken ){
+	// 	// 	logger.warn('Token is not an instance of AuthToken.');
+	// 	// 	token = new OAuthAuthentication.AuthToken(token);
+	// 	// }
+
+		
+
+	// }
 
 	async isAuthenticated(token) {
 
 		logger.track('🔒  You are here → OAuthAuthentication.isAuthenticated()');
 
-		this.token = token;
-		// if (_.isNil(_.get(turbo, 'app.data.current_auth'))) {
-		// 	return false;
-		// }
 		if (_.isNil(token)) {
+
+			if (_.isNil(this.token)) {
+				return false;
+			}
+
+			token = this.token;
+		}
+
+
+		if( ! token instanceof OAuthAuthentication.AuthToken ){
+			logger.warn('Token is not an instance of AuthToken.');
+			// token = new OAuthAuthentication.AuthToken(token);
 			return false;
 		}
 
-		// DEBUG: access_token_expires_at
-		logger.debug(`🔑 \x1b[43m access_token_expires_at:\x1b[0m  ${JSON.stringify(this.access_token_expires_at, null, 2)}`);
-
-		// DEBUG: access_token_expires_in
-		logger.debug(`🔑 \x1b[43m access_token_expires_in:\x1b[0m  ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
-
-		// DEBUG: this.access_token_expires_at.fromNow()
-		logger.debug(`🔑 \x1b[43m this.access_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
-
-		// DEBUG: refresh_token_expires_at
-		logger.debug(`🔑 \x1b[43m refresh_token_expires_at:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at, null, 2)}`);
-
-		// DEBUG: refresh_token_expires_in
-		logger.debug(`🔑 \x1b[43m refresh_token_expires_in:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_in, null, 2)}`);
-
-		// DEBUG: this.refresh_token_expires_at.fromNow()
-		logger.debug(`🔑 \x1b[43m this.refresh_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at.fromNow(), null, 2)}`);
-
-
-		let isAccessTokenExpired = moment().isSameOrAfter(this.access_token_expires_at.subtract(1, 'minutes'));
-
-		if (isAccessTokenExpired) {
-
-			const isRefreshTokenExpired = moment().isSameOrAfter(this.refresh_token_expires_at.subtract(1, 'minutes'));
-			// logger.debug(`🦠  isRefreshTokenExpired: ${JSON.stringify(isRefreshTokenExpired, null, 2)}`);
-
-			if (isRefreshTokenExpired) {
-				return false;
-			}
-			await this.refreshAccessToken();
-			isAccessTokenExpired = moment().isSameOrAfter(this.access_token_expires_at.subtract(1, 'minutes'));
-			// logger.debug(`🦠  isAccessTokenExpired: ${JSON.stringify(isAccessTokenExpired, null, 2)}`);
-			return !isAccessTokenExpired;
-		} else {
-			return true;
-		}
+		return token.isAccessTokenExpired();
 	}
 
+		// this.token = token;
+		// if (_.isNil(_.get(turbo, 'app.data.current_auth'))) {
+		// 	return false;
+		// }
+		// if (_.isNil(token)) {
+		// 	return false;
+		// }
 
-	get access_token_issued_at() {
-		// const issued_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.iat', 0);
-		const issued_at = _.get(this.token, 'access_token_jwt.iat', 0);
+		// // DEBUG: access_token_expires_at
+		// logger.debug(`🔑 \x1b[43m access_token_expires_at:\x1b[0m  ${JSON.stringify(this.access_token_expires_at, null, 2)}`);
 
-		return  moment.unix(issued_at);
-	}
+		// // DEBUG: access_token_expires_in
+		// logger.debug(`🔑 \x1b[43m access_token_expires_in:\x1b[0m  ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
 
-	get access_token_expires_at() {
-		// const expires_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.exp', moment().subtract(1, 'days').unix());
-		const expires_at = _.get(this.token, 'access_token_jwt.exp', moment().subtract(1, 'days').unix());
+		// // DEBUG: this.access_token_expires_at.fromNow()
+		// logger.debug(`🔑 \x1b[43m this.access_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
 
-		return moment.unix(expires_at);
-	}
+		// // DEBUG: refresh_token_expires_at
+		// logger.debug(`🔑 \x1b[43m refresh_token_expires_at:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at, null, 2)}`);
 
-	get access_token_expires_in() {
-		return this.access_token_expires_at.fromNow();
-	}
+		// // DEBUG: refresh_token_expires_in
+		// logger.debug(`🔑 \x1b[43m refresh_token_expires_in:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_in, null, 2)}`);
 
-	get refresh_token_issued_at() {
-		// const issued_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.iat', 0);
-		const issued_at = _.get(this.token, 'refresh_token_jwt.iat', 0);
-
-		return  moment.unix(issued_at);
-	}
-
-	get refresh_token_expires_at() {
-		// const expires_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
-		const expires_at = _.get(this.token, 'refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
-
-		return moment.unix(expires_at);
-	}
-
-	get refresh_token_expires_in() {
-		return this.refresh_token_expires_at.fromNow();
-	}
+		// // DEBUG: this.refresh_token_expires_at.fromNow()
+		// logger.debug(`🔑 \x1b[43m this.refresh_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at.fromNow(), null, 2)}`);
 
 
-	refreshAccessToken() {
+		// let isAccessTokenExpired = moment().isSameOrAfter(this.access_token_expires_at.subtract(1, 'minutes'));
 
+		// let isAccessTokenExpired = token.isAccessTokenExpired();
+
+		// if (isAccessTokenExpired) {
+
+		// 	// const isRefreshTokenExpired = moment().isSameOrAfter(this.refresh_token_expires_at.subtract(1, 'minutes'));
+		// 	const isRefreshTokenExpired = token.isRefreshTokenExpired();
+
+
+		// 	logger.debug(`🦠  isRefreshTokenExpired: ${JSON.stringify(isRefreshTokenExpired, null, 2)}`);
+
+		// 	if (isRefreshTokenExpired) {
+		// 		return false;
+		// 	}
+		// 	await this.renewAccessToken();
+		// 	isAccessTokenExpired = moment().isSameOrAfter(this.access_token_expires_at.subtract(1, 'minutes'));
+		// 	logger.debug(`🦠  isAccessTokenExpired: ${JSON.stringify(isAccessTokenExpired, null, 2)}`);
+		// 	return !isAccessTokenExpired;
+		// } else {
+		// 	return true;
+		// }
+		// }
+
+
+	// get access_token_issued_at() {
+	// 	// const issued_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.iat', 0);
+	// 	const issued_at = _.get(this.token, 'access_token_jwt.iat', 0);
+
+	// 	return  moment.unix(issued_at);
+	// }
+
+	// get access_token_expires_at() {
+	// 	// const expires_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.exp', moment().subtract(1, 'days').unix());
+	// 	const expires_at = _.get(this.token, 'access_token_jwt.exp', moment().subtract(1, 'days').unix());
+
+	// 	return moment.unix(expires_at);
+	// }
+
+	// get access_token_expires_in() {
+	// 	return this.access_token_expires_at.fromNow();
+	// }
+
+	// get refresh_token_issued_at() {
+	// 	// const issued_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.iat', 0);
+	// 	const issued_at = _.get(this.token, 'refresh_token_jwt.iat', 0);
+
+	// 	return  moment.unix(issued_at);
+	// }
+
+	// get refresh_token_expires_at() {
+	// 	// const expires_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
+	// 	const expires_at = _.get(this.token, 'refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
+
+	// 	return moment.unix(expires_at);
+	// }
+
+	// get refresh_token_expires_in() {
+	// 	return this.refresh_token_expires_at.fromNow();
+	// }
+
+
+	renewAccessToken(...args) {
+		return this.flow.renewAccessToken(...args);
 	}
 
 }
+
+OAuthAuthentication.AuthToken = require('./AuthToken');
 
 module.exports = OAuthAuthentication;

@@ -67,6 +67,7 @@ class Code {
 		client_id,
 		callback_url,
 		public_key,
+		token,
 		endpoints: {
 			auth: auth_endpoint,
 			certs: certs_endpoint,
@@ -78,8 +79,9 @@ class Code {
 	}) {
 		this.client_id = client_id;
 		this.callback_url = callback_url;
-		this.accessToken = null;
-		this.refreshToken = null;
+		// this.accessToken = null;
+		// this.refreshToken = null;
+		this.auth_token = token;
 		this.auth_endpoint = auth_endpoint;
 		this.certs_endpoint = certs_endpoint;
 		this.logout_endpoint = logout_endpoint;
@@ -92,15 +94,15 @@ class Code {
 		this.public_key = public_key;
 	}
 
-	async getToken() {
-		logger.track('🔒  you are here → oauth.code.getToken()');
+	async authenticate() {
+		logger.track('🔒  you are here → oauth.code.authenticate()');
 
 		// logger.debug(`🦠  auth_endpoint: ${JSON.stringify(this.auth_endpoint, null, 2)}`);
 
 		return new Promise((resolve, reject) => {
 			const state = generateGUID();
 			const next = async (err, code) => {
-				logger.track('🔒  you are here → oauth.code.getToken().next()');
+				logger.track('🔒  you are here → oauth.code.authenticate().next()');
 				logger.debug(`🦠  oauth code: ${JSON.stringify(code, null, 2)}`);
 
 				turbo.openLoadingScreen();
@@ -137,9 +139,9 @@ class Code {
 					logger.track('📌  you are here → firing event: authentication::success::code');
 					turbo.events.fire('authentication::success::code');
 					Alloy.close('login-required');
-					const auth_token = new AuthenticationToken(auth.json, { key: this.public_key });
+					this.auth_token = new AuthenticationToken(auth.json, { key: this.public_key });
 					// return resolve(auth);
-					return resolve(auth_token);
+					return resolve(this.auth_token);
 				} catch (error) {
 					console.error(error);
 					return reject(error);
@@ -231,10 +233,12 @@ class Code {
 		});
 	}
 
-	async refreshAccessToken(token) {
-		logger.track('🔒  you are here → oauth.code.refreshAccessToken()');
+	async renewAccessToken(token) {
+		logger.track('🔒  you are here → oauth.code.renewAccessToken()');
 
 		const auth_token = token || this.auth_token;
+
+		logger.verbose(`🦠  auth_token: ${JSON.stringify(auth_token, null, 2)}`);
 
 		if (_.isNil(auth_token)) {
 			//TODO: Should we throw error here?
@@ -242,6 +246,8 @@ class Code {
 		}
 		const { refresh_token } = auth_token;
 		if (refresh_token) {
+
+			logger.trace(`📌  you are here → calling please`);
 			const auth = await this.please
 				.body({
 					client_id:  this.client_id,
@@ -251,7 +257,7 @@ class Code {
 				.timeout(10000)
 				.post(this.token_endpoint);
 
-			// this.storeInformation(auth);
+			// logger.verbose(`🦠  auth: ${JSON.stringify(auth, null, 2)}`);
 			const response = new AuthenticationToken(auth.json, { key: this.public_key });
 
 			return response;
@@ -274,9 +280,6 @@ class Code {
 			//TODO: Should we throw error here?
 			return false;
 		}
-
-		try {
-
 			await this.please
 				.bearer(auth_token.access_token)
 				.body({
@@ -285,11 +288,14 @@ class Code {
 				})
 				.responseType('none')
 				.debug(turbo.VERBOSE_MODE)
-				.post(this.logout_endpoint);
-		} catch (error) {
-			console.error(`🦠  error: ${JSON.stringify(error, null, 2)}`);
-			// throw error;
-		}
+				.post(this.logout_endpoint)
+				.catch( error => {
+							console.error(`🦠  error: ${JSON.stringify(error, null, 2)}`);
+							// throw error;
+				})
+				.finally(() => {
+					this.auth_token = null;
+				});
 
 
 	}
