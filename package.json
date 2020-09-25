@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/authentication-oauth",
-	"version": "0.0.36",
+	"version": "1.0.0",
 	"description": "Titanium native mobile OAuth plugin for authentication manager",
 	"keywords": [
 		"oauth",
@@ -44,10 +44,10 @@
 		"lodash": "^4.17.20"
 	},
 	"peerDependencies": {
-		"@titanium/please": "^0.0.39",
-		"@titanium/jwt": ">=0.0.11",
-		"@titanium/polyfill": ">=0.0.14",
-		"@geek/logger": ">=0.0.1"
+		"@titanium/please": "^1.0.0",
+		"@titanium/jwt": ">=0.0.15",
+		"@titanium/polyfill": ">=0.0.15",
+		"@geek/logger": ">=1.0.0"
 	},
 	"main": "./OAuthAuthentication.js",
 	"scripts": {
