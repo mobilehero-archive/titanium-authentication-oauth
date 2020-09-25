@@ -80,8 +80,8 @@ class OAuthAuthentication {
 
 	async logout(...args) {
 		logger.track('🔒  You are here → OAuthAuthentication.logout()');
-		await this.flow.logout(...args);
 		this[TOKEN] = null;
+		await this.flow.logout(...args);
 	}
 
 	async renew(...args) {

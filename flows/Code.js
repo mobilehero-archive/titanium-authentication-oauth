@@ -287,7 +287,7 @@ class Code {
 					refresh_token: auth_token.refresh_token,
 				})
 				.responseType('none')
-				.debug(turbo.VERBOSE_MODE)
+				.debug(turbo.API_VERBOSE_MODE)
 				.post(this.logout_endpoint)
 				.catch( error => {
 							console.error(`🦠  error: ${JSON.stringify(error, null, 2)}`);
