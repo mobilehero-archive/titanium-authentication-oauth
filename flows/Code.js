@@ -101,6 +101,7 @@ class Code {
 
 		return new Promise((resolve, reject) => {
 			const state = generateGUID();
+			turbo.events.removeAllListeners('codeflow::open::dialog');
 			const next = async (err, code) => {
 				logger.track('🔒  you are here → oauth.code.authenticate().next()');
 				logger.debug(`🦠  oauth code: ${JSON.stringify(code, null, 2)}`);
@@ -222,8 +223,7 @@ class Code {
 				webdialogOptions.intentFlags = Ti.Android.FLAG_ACTIVITY_NO_HISTORY | Ti.Android.FLAG_ACTIVITY_NEW_TASK;
 			}
 
-
-			turbo.events.once('codeflow::open::dialog', e => {
+			turbo.events.on('codeflow::open::dialog', e => {
 				logger.track('🔒  you are here → opening webdialog');
 				webdialog.open(webdialogOptions);
 			});
@@ -255,17 +255,23 @@ class Code {
 					grant_type: 'refresh_token',
 				})
 				.timeout(10000)
-				.post(this.token_endpoint);
+				.post(this.token_endpoint)
+				.catch(error => {
+					logger.error(`🦠  renewAccessToken.error: ${JSON.stringify(error, null, 2)}`);
+					console.error(error);
+				});
+
+			if (! auth) {
+				// An error occurred when refreshing the token
+				return;
+			}
 
 			// logger.verbose(`🦠  auth: ${JSON.stringify(auth, null, 2)}`);
-			const response = new AuthenticationToken(auth.json, { key: this.public_key });
+			return new AuthenticationToken(auth.json, { key: this.public_key });
 
-			return response;
 		} else {
 			return;
 		}
-
-
 	}
 
 	async logout(token) {
@@ -280,22 +286,22 @@ class Code {
 			//TODO: Should we throw error here?
 			return false;
 		}
-			await this.please
-				.bearer(auth_token.access_token)
-				.body({
-					client_id:     this.client_id,
-					refresh_token: auth_token.refresh_token,
-				})
-				.responseType('none')
-				.debug(turbo.API_VERBOSE_MODE)
-				.post(this.logout_endpoint)
-				.catch( error => {
-							console.error(`🦠  error: ${JSON.stringify(error, null, 2)}`);
-							// throw error;
-				})
-				.finally(() => {
-					this.auth_token = null;
-				});
+		await this.please
+			.bearer(auth_token.access_token)
+			.body({
+				client_id:     this.client_id,
+				refresh_token: auth_token.refresh_token,
+			})
+			.responseType('none')
+			.debug(turbo.API_VERBOSE_MODE)
+			.post(this.logout_endpoint)
+			.catch(error => {
+				console.error(`🦠  error: ${JSON.stringify(error, null, 2)}`);
+				// throw error;
+			})
+			.finally(() => {
+				this.auth_token = null;
+			});
 
 
 	}

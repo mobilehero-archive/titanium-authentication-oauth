@@ -5,7 +5,7 @@ const Please = require('@titanium/please');
 const logger = require('@geek/logger').createLogger('@titanium/authentication-oauth', { meta: { filename: __filename } });
 
 class Password {
-	constructor({ baseUrl = '', tokenPath, client_id, client_secret, default_headers, key}) {
+	constructor({ baseUrl = '', tokenPath, client_id, client_secret, default_headers, key }) {
 		logger.track('🔒  you are here →   oauth.flows.password.constructor');
 		this.baseUrl = baseUrl;
 		this.endpoint = this.baseUrl + tokenPath;
@@ -50,27 +50,27 @@ class Password {
 
 	async getToken(options = {}) {
 		logger.track('🔒  you are here →   oauth.flows.password.getToken');
-		const login_info = {...options};
-		const {username, password} = login_info;
+		const login_info = { ...options };
+		const { username, password } = login_info;
 		// console.debug(`options: ${JSON.stringify(options, null, 2)}`);
 
-		const client_options = Object.assign({}, _.omit(options, ['username', 'password']), {
+		const client_options = Object.assign({}, _.omit(options, [ 'username', 'password' ]), {
 			timeout: 60000,
-			auth: {
+			auth:    {
 				username: this.client_id,
 				password: this.client_secret,
 			},
-			validateStatus: function(status) {
+			validateStatus(status) {
 				return status >= 200 && status <= 503;
 			},
 			headers: this.default_headers,
-			url: this.endpoint,
-			body: querystring.stringify({
+			url:     this.endpoint,
+			body:    querystring.stringify({
 				grant_type: 'password',
-				username: username,
-				password: password,
-				device: Titanium.Platform.id,
-				client_id: this.client_id,
+				username,
+				password,
+				device:     Titanium.Platform.id,
+				client_id:  this.client_id,
 			}),
 		});
 
@@ -87,10 +87,10 @@ class Password {
 			return Promise.reject(authError);
 		}
 
-		const token = new Token(body, {key: this.key});
+		const token = new Token(body, { key: this.key });
 
 		return token;
-			// });
+		// });
 		// .catch(error => {
 		// 	console.debug('you are here → oauth.password.getToken error');
 		// 	console.error(error);
@@ -111,7 +111,7 @@ class Password {
 		}
 
 		if (response.status === 401) {
-			var statusErr = new Error('access_denied');
+			const statusErr = new Error('access_denied');
 			statusErr.status = response.status;
 			statusErr.body = response.body;
 			statusErr.code = 'ERROR';
@@ -136,16 +136,16 @@ class Password {
 }
 
 const ERROR_RESPONSES = {
-	invalid_request: 'The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed.',
-	invalid_client: 'Client authentication failed (e.g., unknown client, no client authentication included, or unsupported authentication method).',
-	invalid_grant: 'The provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.',
-	unauthorized_client: 'The client is not authorized to request an authorization code using this method.',
-	unsupported_grant_type: 'The authorization grant type is not supported by the authorization server.',
-	access_denied: 'The resource owner or authorization server denied the request.',
+	invalid_request:           'The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed.',
+	invalid_client:            'Client authentication failed (e.g., unknown client, no client authentication included, or unsupported authentication method).',
+	invalid_grant:             'The provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.',
+	unauthorized_client:       'The client is not authorized to request an authorization code using this method.',
+	unsupported_grant_type:    'The authorization grant type is not supported by the authorization server.',
+	access_denied:             'The resource owner or authorization server denied the request.',
 	unsupported_response_type: 'The authorization server does not support obtaining an authorization code using this method.',
-	invalid_scope: 'The requested scope is invalid, unknown, or malformed.',
-	server_error: 'The authorization server encountered an unexpected condition that prevented it from fulfilling the request. (This error code is needed because a 500 Internal Server Error HTTP status code cannot be returned to the client via an HTTP redirect.)',
-	temporarily_unavailable: 'The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.',
+	invalid_scope:             'The requested scope is invalid, unknown, or malformed.',
+	server_error:              'The authorization server encountered an unexpected condition that prevented it from fulfilling the request. (This error code is needed because a 500 Internal Server Error HTTP status code cannot be returned to the client via an HTTP redirect.)',
+	temporarily_unavailable:   'The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.',
 };
 
 module.exports = Password;

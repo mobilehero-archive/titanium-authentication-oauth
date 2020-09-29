@@ -12,12 +12,12 @@ class AuthToken {
 
 		this.token_type = data.token_type && data.token_type.toLowerCase();
 
-		this.access_token = data.access_token;	
-		this.access_token_jwt = data.access_token_jwt || jsonwebtoken.decode(this.access_token, params.key);		
+		this.access_token = data.access_token;
+		this.access_token_jwt = data.access_token_jwt || jsonwebtoken.decode(this.access_token, params.key);
 
 		this.refresh_token = data.refresh_token;
-		this.refresh_token_jwt = data.refresh_token_jwt || jsonwebtoken.decode(this.refresh_token, null, true);		
-		
+		this.refresh_token_jwt = data.refresh_token_jwt || jsonwebtoken.decode(this.refresh_token, null, true);
+
 
 		this.expires_at = data.expires_at || parseExpiresIn(Number(data.expires_in));
 
@@ -34,6 +34,7 @@ class AuthToken {
 				last_name:      this.access_token_jwt.family_name,
 				formatted_name: this.access_token_jwt.name,
 				email:          this.access_token_jwt.email,
+				subject_id:     this.access_token_jwt.sub,
 				scopes:         _.split(_.trim(this.access_token_jwt.scope || ''), /\s+/g).filter(o => o),
 			};
 			this.issuer = this.access_token_jwt.iss;
@@ -44,23 +45,23 @@ class AuthToken {
 			// this.access_token_expires_at = moment.unix(this.access_token_jwt.exp);
 
 
-		// DEBUG: access_token_expires_at
-		logger.debug(`🔑 \x1b[43m access_token_expires_at:\x1b[0m  ${JSON.stringify(this.access_token_expires_at, null, 2)}`);
+			// DEBUG: access_token_expires_at
+			logger.debug(`🔑 \x1b[43m access_token_expires_at:\x1b[0m  ${JSON.stringify(this.access_token_expires_at, null, 2)}`);
 
-		// DEBUG: access_token_expires_in
-		logger.debug(`🔑 \x1b[43m access_token_expires_in:\x1b[0m  ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
+			// DEBUG: access_token_expires_in
+			logger.debug(`🔑 \x1b[43m access_token_expires_in:\x1b[0m  ${JSON.stringify(this.access_token_expires_in, null, 2)}`);
 
-		// DEBUG: this.access_token_expires_at.fromNow()
-		logger.debug(`🔑 \x1b[43m this.access_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
+			// DEBUG: this.access_token_expires_at.fromNow()
+			logger.debug(`🔑 \x1b[43m this.access_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.access_token_expires_at.fromNow(), null, 2)}`);
 
-		// DEBUG: refresh_token_expires_at
-		logger.debug(`🔑 \x1b[43m refresh_token_expires_at:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at, null, 2)}`);
+			// DEBUG: refresh_token_expires_at
+			logger.debug(`🔑 \x1b[43m refresh_token_expires_at:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at, null, 2)}`);
 
-		// DEBUG: refresh_token_expires_in
-		logger.debug(`🔑 \x1b[43m refresh_token_expires_in:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_in, null, 2)}`);
+			// DEBUG: refresh_token_expires_in
+			logger.debug(`🔑 \x1b[43m refresh_token_expires_in:\x1b[0m  ${JSON.stringify(this.refresh_token_expires_in, null, 2)}`);
 
-		// DEBUG: this.refresh_token_expires_at.fromNow()
-		logger.debug(`🔑 \x1b[43m this.refresh_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at.fromNow(), null, 2)}`);
+			// DEBUG: this.refresh_token_expires_at.fromNow()
+			logger.debug(`🔑 \x1b[43m this.refresh_token_expires_at.fromNow():\x1b[0m  ${JSON.stringify(this.refresh_token_expires_at.fromNow(), null, 2)}`);
 
 
 		}
@@ -89,9 +90,8 @@ class AuthToken {
 
 
 	isExpired() {
-	return Date.now() > this.expires.getTime();
+		return Date.now() > this.expires.getTime();
 	}
-
 
 
 	get access_token_issued_at() {
@@ -156,6 +156,6 @@ const parseExpiresIn = duration => {
 
 	// return moment(this.expires_at);
 	return expires_at;
-}
+};
 
 module.exports = AuthToken;
