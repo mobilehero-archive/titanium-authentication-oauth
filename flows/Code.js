@@ -286,17 +286,22 @@ class Code {
 			//TODO: Should we throw error here?
 			return false;
 		}
+		const body = {
+			client_id:     this.client_id,
+			refresh_token: auth_token.refresh_token,
+		};
+
+		logger.secret(`🦠  OAuth logout body: ${JSON.stringify(body, null, 2)}`);
+		logger.secret(`🦠  auth_token.access_token: ${JSON.stringify(auth_token.access_token, null, 2)}`);
+
 		await this.please
 			.bearer(auth_token.access_token)
-			.body({
-				client_id:     this.client_id,
-				refresh_token: auth_token.refresh_token,
-			})
-			.responseType('none')
+			.form(body)
 			.debug(turbo.API_VERBOSE_MODE)
 			.post(this.logout_endpoint)
 			.catch(error => {
-				console.error(`🦠  error: ${JSON.stringify(error, null, 2)}`);
+				console.error(`🦠  OAuth logout error: ${JSON.stringify(error, null, 2)}`);
+				logger.error('OAuth logout error', error);
 				// throw error;
 			})
 			.finally(() => {

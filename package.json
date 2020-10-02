@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/authentication-oauth",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Titanium native mobile OAuth plugin for authentication manager",
 	"keywords": [
 		"oauth",
