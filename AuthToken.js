@@ -6,7 +6,7 @@ const logger = require('@geek/logger').createLogger('@titanium/authentication-oa
 
 class AuthToken {
 	constructor(data, params = {}) {
-		logger.track('🔒  you are here →   AuthToken.constructor');
+		logger.track('🔒  you are here → AuthToken.constructor');
 
 		// logger.verbose(`🦠  AuthToken.data: ${JSON.stringify(data, null, 2)}`);
 

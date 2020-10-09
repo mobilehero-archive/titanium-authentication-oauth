@@ -19,7 +19,7 @@ function buildURL(baseURL, params) {
 	const encodedParams = [];
 
 	for (const param in params) {
-		if (params.hasOwnProperty(param)) {
+		if (! _.isNil(params[param])) {
 			encodedParams.push(`${encodeURIComponent(param)}=${encodeURIComponent(params[param])}`);
 		}
 	}
@@ -68,6 +68,7 @@ class Code {
 		callback_url,
 		public_key,
 		token,
+		scopes = 'openid info offline_access',
 		endpoints: {
 			auth: auth_endpoint,
 			certs: certs_endpoint,
@@ -89,7 +90,7 @@ class Code {
 		this.token_endpoint = token_endpoint;
 		this.userinfo_endpoint = userinfo_endpoint;
 		this.wellknown_endpoint = wellknown_endpoint;
-
+		this.scopes = scopes;
 		this.please = new Please();
 		this.public_key = public_key;
 	}
@@ -97,14 +98,14 @@ class Code {
 	async authenticate() {
 		logger.track('🔒  you are here → oauth.code.authenticate()');
 
-		// logger.debug(`🦠  auth_endpoint: ${JSON.stringify(this.auth_endpoint, null, 2)}`);
+		// logger.debug(`🔒  auth_endpoint: ${JSON.stringify(this.auth_endpoint, null, 2)}`);
 
 		return new Promise((resolve, reject) => {
 			const state = generateGUID();
 			turbo.events.removeAllListeners('codeflow::open::dialog');
 			const next = async (err, code) => {
 				logger.track('🔒  you are here → oauth.code.authenticate().next()');
-				logger.debug(`🦠  oauth code: ${JSON.stringify(code, null, 2)}`);
+				logger.debug(`🔒  oauth code: ${JSON.stringify(code, null, 2)}`);
 
 				turbo.openLoadingScreen();
 
@@ -128,7 +129,7 @@ class Code {
 				try {
 					const auth = await this.please
 						.debug(false)
-						.body({
+						.form({
 							grant_type:   'authorization_code',
 							code,
 							redirect_uri: this.callback_url,
@@ -144,7 +145,7 @@ class Code {
 					// return resolve(auth);
 					return resolve(this.auth_token);
 				} catch (error) {
-					console.error(error);
+					logger.error(error);
 					return reject(error);
 				}
 			};
@@ -153,19 +154,19 @@ class Code {
 				response_type:   'code',
 				client_id:       this.client_id,
 				redirect_uri:    this.callback_url,
-				scope:           this.scopes,
+				// scope:           this.scopes,  // this seems to be causing some issues right now...
 				approval_prompt: 'force',
 				btmpl:           'mobile',
 				state,
 			});
 
-			logger.debug(`🦠 auth endpoint url: ${JSON.stringify(url, null, 2)}`);
+			logger.debug(`🔒 auth endpoint url: ${JSON.stringify(url, null, 2)}`);
 
 			const handleUrl = async eventData => {
 				let launchInformation;
 
-				logger.debug(`🦠  eventData: ${JSON.stringify(eventData, null, 2)}`);
-				logger.debug(`🦠  launchInformation: ${JSON.stringify(launchInformation, null, 2)}`);
+				logger.debug(`🔒  eventData: ${JSON.stringify(eventData, null, 2)}`);
+				logger.debug(`🔒  launchInformation: ${JSON.stringify(launchInformation, null, 2)}`);
 
 				// Extract the URL out of the event data
 				if (OS_ANDROID) {
@@ -225,6 +226,7 @@ class Code {
 
 			turbo.events.on('codeflow::open::dialog', e => {
 				logger.track('🔒  you are here → opening webdialog');
+				logger.debug(`🔒  webdialogOptions: ${JSON.stringify(webdialogOptions, null, 2)}`);
 				webdialog.open(webdialogOptions);
 			});
 
@@ -237,8 +239,7 @@ class Code {
 		logger.track('🔒  you are here → oauth.code.renewAccessToken()');
 
 		const auth_token = token || this.auth_token;
-
-		logger.verbose(`🦠  auth_token: ${JSON.stringify(auth_token, null, 2)}`);
+		logger.secret(`🔒  auth_token to renew: ${JSON.stringify(auth_token, null, 2)}`);
 
 		if (_.isNil(auth_token)) {
 			//TODO: Should we throw error here?
@@ -249,16 +250,18 @@ class Code {
 
 			logger.trace(`📌  you are here → calling please`);
 			const auth = await this.please
-				.body({
+				.form({
 					client_id:  this.client_id,
 					refresh_token,
 					grant_type: 'refresh_token',
 				})
+				.debug(turbo.API_VERBOSE_MODE)
 				.timeout(10000)
 				.post(this.token_endpoint)
 				.catch(error => {
-					logger.error(`🦠  renewAccessToken.error: ${JSON.stringify(error, null, 2)}`);
+					logger.error(`🛑  renewAccessToken.error: ${JSON.stringify(error, null, 2)}`);
 					console.error(error);
+					throw error;
 				});
 
 			if (! auth) {
@@ -266,7 +269,7 @@ class Code {
 				return;
 			}
 
-			// logger.verbose(`🦠  auth: ${JSON.stringify(auth, null, 2)}`);
+			// logger.verbose(`🔒  auth: ${JSON.stringify(auth, null, 2)}`);
 			return new AuthenticationToken(auth.json, { key: this.public_key });
 
 		} else {
@@ -286,21 +289,21 @@ class Code {
 			//TODO: Should we throw error here?
 			return false;
 		}
-		const body = {
-			client_id:     this.client_id,
-			refresh_token: auth_token.refresh_token,
-		};
 
-		logger.secret(`🦠  OAuth logout body: ${JSON.stringify(body, null, 2)}`);
-		logger.secret(`🦠  auth_token.access_token: ${JSON.stringify(auth_token.access_token, null, 2)}`);
+		logger.secret(`🔒  OAuth logout - auth_token.access_token: ${JSON.stringify(auth_token.access_token, null, 2)}`);
+		logger.secret(`🔒  OAuth logout - auth_token.refresh_token: ${JSON.stringify(auth_token.refresh_token, null, 2)}`);
 
 		await this.please
 			.bearer(auth_token.access_token)
-			.form(body)
+			.form({
+				client_id:     this.client_id,
+				refresh_token: auth_token.refresh_token,
+			})
+			.responseType('none')
 			.debug(turbo.API_VERBOSE_MODE)
 			.post(this.logout_endpoint)
 			.catch(error => {
-				console.error(`🦠  OAuth logout error: ${JSON.stringify(error, null, 2)}`);
+				console.error(`🛑 OAuth logout error: ${JSON.stringify(error, null, 2)}`);
 				logger.error('OAuth logout error', error);
 				// throw error;
 			})
