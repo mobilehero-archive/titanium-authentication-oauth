@@ -2,17 +2,14 @@
 /* eslint-disable promise/avoid-new */
 // RFC for OAuth2: https://tools.ietf.org/html/rfc6749
 
-const Please = require('@titanium/please');
-const fs = require('fs');
-const path = require('path');
-const logger = require('@geek/logger').createLogger('@titanium/authentication-oauth', { meta: { filename: __filename } });
-
-const AuthenticationToken = require('../AuthToken');
-
-const webdialog = require('@titanium/webdialog');
+const logger = require(`@geek/logger`).createLogger(`@titanium/authentication-oauth`, { meta: { filename: __filename } });
+const Please = require(`@titanium/please`);
+const AuthToken = require(`@geek/jwt/AuthToken`);
+const webdialog = require(`@titanium/webdialog`);
 let deeply;
+
 if (OS_ANDROID) {
-	deeply = require('ti.deeply');
+	deeply = require(`ti.deeply`);
 }
 
 function buildURL(baseURL, params) {
@@ -23,7 +20,7 @@ function buildURL(baseURL, params) {
 			encodedParams.push(`${encodeURIComponent(param)}=${encodeURIComponent(params[param])}`);
 		}
 	}
-	return `${baseURL}?${encodedParams.join('&')}`;
+	return `${baseURL}?${encodedParams.join(`&`)}`;
 }
 
 /**
@@ -31,9 +28,9 @@ function buildURL(baseURL, params) {
  * @returns {string} Generated GUID.
  */
 function generateGUID() {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+	return `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`.replace(/[xy]/g, c => {
 		const r = (Math.random() * 16) | 0;
-		const v = c == 'x' ? r : (r & 0x3) | 0x8;
+		const v = c == `x` ? r : (r & 0x3) | 0x8;
 		return v.toString(16);
 	});
 }
@@ -52,10 +49,10 @@ function parseQueryParams(url, callbackUrl) {
 	// FIXME handle when there are no query params?
 	pairs = decodeURI(url)
 		.slice(callbackUrl.length + 1)
-		.split('&'); // cut off base callback URL and ? char
+		.split(`&`); // cut off base callback URL and ? char
 
 	for (let i = 0; i < pairs.length; i++) {
-		keyValuePair = pairs[i].split('=');
+		keyValuePair = pairs[i].split(`=`);
 		queryParams[keyValuePair[0]] = keyValuePair[1];
 	}
 
@@ -68,7 +65,7 @@ class Code {
 		callback_url,
 		public_key,
 		token,
-		scopes = 'openid info offline_access',
+		scopes = `openid info offline_access`,
 		endpoints: {
 			auth: auth_endpoint,
 			certs: certs_endpoint,
@@ -96,15 +93,15 @@ class Code {
 	}
 
 	async authenticate() {
-		logger.track('🔒  you are here → oauth.code.authenticate()');
+		logger.track(`🔒  you are here → oauth.code.authenticate()`);
 
 		// logger.debug(`🔒  auth_endpoint: ${JSON.stringify(this.auth_endpoint, null, 2)}`);
 
 		return new Promise((resolve, reject) => {
 			const state = generateGUID();
-			turbo.events.removeAllListeners('codeflow::open::dialog');
+			turbo.events.removeAllListeners(`codeflow::open::dialog`);
 			const next = async (err, code) => {
-				logger.track('🔒  you are here → oauth.code.authenticate().next()');
+				logger.track(`🔒  you are here → oauth.code.authenticate().next()`);
 				logger.debug(`🔒  oauth code: ${JSON.stringify(code, null, 2)}`);
 
 				turbo.openLoadingScreen();
@@ -114,7 +111,7 @@ class Code {
 					if (OS_IOS) {
 						webdialog.close();
 						turbo.closeLoadingScreen();
-						alert('Server error.  Please try again.');
+						alert(`Server error.  Please try again.`);
 					}
 					return reject(err);
 				}
@@ -130,7 +127,7 @@ class Code {
 					const auth = await this.please
 						.debug(false)
 						.form({
-							grant_type:   'authorization_code',
+							grant_type:   `authorization_code`,
 							code,
 							redirect_uri: this.callback_url,
 							client_id:    this.client_id,
@@ -138,10 +135,10 @@ class Code {
 						.post(this.token_endpoint);
 					// this.storeInformation(auth);
 
-					logger.track('📌  you are here → firing event: authentication::success::code');
-					turbo.events.fire('authentication::success::code');
-					Alloy.close('login-required');
-					this.auth_token = new AuthenticationToken(auth.json, { key: this.public_key });
+					logger.track(`📌  you are here → firing event: authentication::success::code`);
+					turbo.events.fire(`authentication::success::code`);
+					Alloy.close(`login-required`);
+					this.auth_token = new AuthToken(auth.json, { key: this.public_key });
 					// return resolve(auth);
 					return resolve(this.auth_token);
 				} catch (error) {
@@ -151,12 +148,12 @@ class Code {
 			};
 
 			const url = buildURL(this.auth_endpoint, {
-				response_type:   'code',
+				response_type:   `code`,
 				client_id:       this.client_id,
 				redirect_uri:    this.callback_url,
 				// scope:           this.scopes,  // this seems to be causing some issues right now...
-				approval_prompt: 'force',
-				btmpl:           'mobile',
+				approval_prompt: `force`,
+				btmpl:           `mobile`,
 				state,
 			});
 
@@ -181,7 +178,7 @@ class Code {
 
 				// Remove the handleUrl call
 				if (OS_IOS) {
-					Ti.App.iOS.removeEventListener('handleurl', handleUrl);
+					Ti.App.iOS.removeEventListener(`handleurl`, handleUrl);
 				}
 
 				// Parse out the data from the URL
@@ -209,12 +206,12 @@ class Code {
 			if (OS_ANDROID) {
 				deeply.setCallback(handleUrl);
 			} else if (OS_IOS) {
-				Ti.App.iOS.addEventListener('handleurl', handleUrl);
+				Ti.App.iOS.addEventListener(`handleurl`, handleUrl);
 			}
 
 			const webdialogOptions = {
 				url,
-				title:                  'Login',
+				title:                  `Login`,
 				showTitle:              true,
 				barCollapsingEnabled:   false,
 				enterReaderIfAvailable: false,
@@ -224,19 +221,19 @@ class Code {
 				webdialogOptions.intentFlags = Ti.Android.FLAG_ACTIVITY_NO_HISTORY | Ti.Android.FLAG_ACTIVITY_NEW_TASK;
 			}
 
-			turbo.events.on('codeflow::open::dialog', e => {
-				logger.track('🔒  you are here → opening webdialog');
+			turbo.events.on(`codeflow::open::dialog`, e => {
+				logger.track(`🔒  you are here → opening webdialog`);
 				logger.debug(`🔒  webdialogOptions: ${JSON.stringify(webdialogOptions, null, 2)}`);
 				webdialog.open(webdialogOptions);
 			});
 
-			Alloy.open('login-required');
+			Alloy.open(`login-required`);
 
 		});
 	}
 
 	async renewAccessToken(token) {
-		logger.track('🔒  you are here → oauth.code.renewAccessToken()');
+		logger.track(`🔒  you are here → oauth.code.renewAccessToken()`);
 
 		const auth_token = token || this.auth_token;
 		logger.secret(`🔒  auth_token to renew: ${JSON.stringify(auth_token, null, 2)}`);
@@ -253,7 +250,7 @@ class Code {
 				.form({
 					client_id:  this.client_id,
 					refresh_token,
-					grant_type: 'refresh_token',
+					grant_type: `refresh_token`,
 				})
 				.debug(turbo.API_VERBOSE_MODE)
 				.timeout(10000)
@@ -270,7 +267,7 @@ class Code {
 			}
 
 			// logger.verbose(`🔒  auth: ${JSON.stringify(auth, null, 2)}`);
-			return new AuthenticationToken(auth.json, { key: this.public_key });
+			return new AuthToken(auth.json, { key: this.public_key });
 
 		} else {
 			return;
@@ -278,7 +275,7 @@ class Code {
 	}
 
 	async logout(token) {
-		logger.track('📌  you are here → oauth.code.logout()');
+		logger.track(`📌  you are here → oauth.code.logout()`);
 
 		// clearInterval(turbo.refresh_token_timer);
 		// turbo.refresh_token_timer = null;
@@ -299,12 +296,12 @@ class Code {
 				client_id:     this.client_id,
 				refresh_token: auth_token.refresh_token,
 			})
-			.responseType('none')
+			.responseType(`none`)
 			.debug(turbo.API_VERBOSE_MODE)
 			.post(this.logout_endpoint)
 			.catch(error => {
 				console.error(`🛑 OAuth logout error: ${JSON.stringify(error, null, 2)}`);
-				logger.error('OAuth logout error', error);
+				logger.error(`OAuth logout error`, error);
 				// throw error;
 			})
 			.finally(() => {

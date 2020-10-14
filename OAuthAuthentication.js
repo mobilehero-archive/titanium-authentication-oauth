@@ -93,4 +93,6 @@ class OAuthAuthentication {
 
 }
 
+OAuthAuthentication.AuthToken = AuthToken;
+
 module.exports = OAuthAuthentication;
