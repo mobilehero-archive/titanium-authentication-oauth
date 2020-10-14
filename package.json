@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/authentication-oauth",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"description": "Titanium native mobile OAuth plugin for authentication manager",
 	"keywords": [
 		"oauth",
@@ -37,7 +37,6 @@
 		"url": "https://github.com/brentonhouse/titanium-authentication-oauth/issues",
 		"email": "brenton.house@gmail.com"
 	},
-	"dependencies": {},
 	"devDependencies": {
 		"@titanium/eslint-config": "0.0.18",
 		"eslint": "^7.11.0",
@@ -48,7 +47,7 @@
 		"moment": "^2.29.1"
 	},
 	"peerDependencies": {
-		"@geek/jwt": "^0.0.5",
+		"@geek/jwt": "^0.0.8",
 		"@geek/logger": ">=1.0.8",
 		"@titanium/please": "^1.0.10",
 		"@titanium/polyfill": ">=0.0.15",
