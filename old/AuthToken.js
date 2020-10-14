@@ -1,12 +1,12 @@
-const jsonwebtoken = require('@titanium/jwt');
-const _ = require('lodash');
-const moment = require('moment');
-const logger = require('@geek/logger').createLogger('@titanium/authentication-oauth', { meta: { filename: __filename } });
+const jsonwebtoken = require(`@geek/jwt`);
+const _ = require(`lodash`);
+const moment = require(`moment`);
+const logger = require(`@geek/logger`).createLogger(`@titanium/authentication-oauth`, { meta: { filename: __filename } });
 
 
 class AuthToken {
 	constructor(data, params = {}) {
-		logger.track('🔒  you are here → AuthToken.constructor');
+		logger.track(`🔒  you are here → AuthToken.constructor`);
 
 		// logger.verbose(`🦠  AuthToken.data: ${JSON.stringify(data, null, 2)}`);
 
@@ -21,7 +21,7 @@ class AuthToken {
 
 		this.expires_at = data.expires_at || parseExpiresIn(Number(data.expires_in));
 
-		this.raw = data.raw || _.omit(data, [ 'token_type', 'access_token', 'refresh_token' ]);
+		this.raw = data.raw || _.omit(data, [ `token_type`, `access_token`, `refresh_token` ]);
 
 		// console.debug(`this.jwt: ${JSON.stringify(this.jwt, null, 2)}`);
 
@@ -35,7 +35,7 @@ class AuthToken {
 				formatted_name: this.access_token_jwt.name,
 				email:          this.access_token_jwt.email,
 				subject_id:     this.access_token_jwt.sub,
-				scopes:         _.split(_.trim(this.access_token_jwt.scope || ''), /\s+/g).filter(o => o),
+				scopes:         _.split(_.trim(this.access_token_jwt.scope || ``), /\s+/g).filter(o => o),
 			};
 			this.issuer = this.access_token_jwt.iss;
 			this.audience = this.access_token_jwt.aud;
@@ -96,14 +96,14 @@ class AuthToken {
 
 	get access_token_issued_at() {
 		// const issued_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.iat', 0);
-		const issued_at = _.get(this, 'access_token_jwt.iat', 0);
+		const issued_at = _.get(this, `access_token_jwt.iat`, 0);
 
 		return  moment.unix(issued_at);
 	}
 
 	get access_token_expires_at() {
 		// const expires_at = _.get(turbo, 'app.data.current_auth.access_token_jwt.exp', moment().subtract(1, 'days').unix());
-		const expires_at = _.get(this, 'access_token_jwt.exp', moment().subtract(1, 'days').unix());
+		const expires_at = _.get(this, `access_token_jwt.exp`, moment().subtract(1, `days`).unix());
 
 		return moment.unix(expires_at);
 	}
@@ -114,14 +114,14 @@ class AuthToken {
 
 	get refresh_token_issued_at() {
 		// const issued_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.iat', 0);
-		const issued_at = _.get(this, 'refresh_token_jwt.iat', 0);
+		const issued_at = _.get(this, `refresh_token_jwt.iat`, 0);
 
 		return  moment.unix(issued_at);
 	}
 
 	get refresh_token_expires_at() {
 		// const expires_at = _.get(turbo, 'app.data.current_auth.refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
-		const expires_at = _.get(this, 'refresh_token_jwt.exp', moment().subtract(1, 'days').unix());
+		const expires_at = _.get(this, `refresh_token_jwt.exp`, moment().subtract(1, `days`).unix());
 
 		return moment.unix(expires_at);
 	}
@@ -131,21 +131,21 @@ class AuthToken {
 	}
 
 	isAccessTokenExpired() {
-		 return moment().isSameOrAfter(this.access_token_expires_at.subtract(1, 'minutes'));
+		 return moment().isSameOrAfter(this.access_token_expires_at.subtract(1, `minutes`));
 	}
 
 	isRefreshTokenExpired() {
-		return moment().isSameOrAfter(this.refresh_token_expires_at.subtract(1, 'minutes'));
+		return moment().isSameOrAfter(this.refresh_token_expires_at.subtract(1, `minutes`));
 	}
 
 }
 
 const parseExpiresIn = duration => {
-	logger.trace('🦖  you are here →   token.parseExpiresIn');
+	logger.trace(`🦖  you are here →   token.parseExpiresIn`);
 
 	let expires_at;
 
-	if (typeof duration === 'number') {
+	if (typeof duration === `number`) {
 	  expires_at = new Date();
 	  expires_at.setSeconds(expires_at.getSeconds() + duration);
 	} else if (duration instanceof Date) {

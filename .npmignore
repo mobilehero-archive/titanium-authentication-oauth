@@ -2,7 +2,8 @@
 .dependabot
 .eslint*
 .github
-
+old
+.nvmrc
 
 # OS Directories and Files
 .DS_Store

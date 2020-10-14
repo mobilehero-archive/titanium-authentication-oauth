@@ -1,23 +1,24 @@
-const logger = require('@geek/logger').createLogger('@titanium/authentication-oauth', { meta: { filename: __filename } });
+const logger = require(`@geek/logger`).createLogger(`@titanium/authentication-oauth`, { meta: { filename: __filename } });
 
-const TOKEN = Symbol('token');
+const TOKEN = Symbol(`token`);
+const AuthToken = require(`@geek/jwt/AuthToken`);
 
 class OAuthAuthentication {
 	constructor(flowName, options = {}) {
-		logger.track('🔒  you are here →   OAuthAuthentication.constructor');
+		logger.track(`🔒  you are here →   OAuthAuthentication.constructor`);
 
 		let Flow;
 		switch (flowName) {
-			case 'code':
+			case `code`:
 				// TIBUG:  https://jira.appcelerator.org/browse/TIMOB-28037
 				// Flow = require('./flows/CodeFlow');
-				Flow = require('./flows/Code');
+				Flow = require(`./flows/Code`);
 				break;
 
-			case 'password':
+			case `password`:
 				// TIBUG:  https://jira.appcelerator.org/browse/TIMOB-28037
 				// Flow = require('./flows/OwnerResourceFlow');
-				Flow = require('./flows/Password');
+				Flow = require(`./flows/Password`);
 				break;
 
 			default:
@@ -25,9 +26,9 @@ class OAuthAuthentication {
 		}
 
 		if (options.token) {
-			if (! (options.token instanceof OAuthAuthentication.AuthToken)) {
-				logger.warn('Token is not an instance of AuthToken.');
-				options.token = new OAuthAuthentication.AuthToken(options.token);
+			if (! (options.token instanceof AuthToken)) {
+				logger.warn(`Token is not an instance of AuthToken.`);
+				options.token = new AuthToken(options.token);
 
 			}
 			this[TOKEN] = options.token;
@@ -35,7 +36,7 @@ class OAuthAuthentication {
 
 		this.flow = new Flow(options);
 
-		Object.defineProperty(this, 'token', {
+		Object.defineProperty(this, `token`, {
 			enumerable: true,
 			get () {
 				return this[TOKEN];
@@ -46,26 +47,26 @@ class OAuthAuthentication {
 
 
 	async logout(...args) {
-		logger.track('🔒  You are here → OAuthAuthentication.logout()');
+		logger.track(`🔒  You are here → OAuthAuthentication.logout()`);
 		this[TOKEN] = null;
 		await this.flow.logout(...args);
 	}
 
 	async renew(...args) {
-		logger.track('🔒  you are here → OAuthAuthentication.renew()');
+		logger.track(`🔒  you are here → OAuthAuthentication.renew()`);
 		this[TOKEN] = await this.flow.renewAccessToken(...args);
 		return this[TOKEN];
 	}
 
 	async authenticate(...args) {
-		logger.track('🔒  you are here → OAuthAuthentication.authenticate()');
+		logger.track(`🔒  you are here → OAuthAuthentication.authenticate()`);
 		this[TOKEN] = await this.flow.authenticate(...args);
 		return this[TOKEN];
 	}
 
 	async isAuthenticated(token) {
 
-		logger.track('🔒  You are here → OAuthAuthentication.isAuthenticated()');
+		logger.track(`🔒  You are here → OAuthAuthentication.isAuthenticated()`);
 
 		if (_.isNil(token)) {
 
@@ -77,8 +78,8 @@ class OAuthAuthentication {
 		}
 
 
-		if (! (token instanceof OAuthAuthentication.AuthToken)) {
-			logger.warn('Token is not an instance of AuthToken.');
+		if (! (token instanceof AuthToken)) {
+			logger.warn(`Token is not an instance of AuthToken.`);
 			// token = new OAuthAuthentication.AuthToken(token);
 			return false;
 		}
@@ -91,7 +92,5 @@ class OAuthAuthentication {
 	}
 
 }
-
-OAuthAuthentication.AuthToken = require('./AuthToken');
 
 module.exports = OAuthAuthentication;
