@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/authentication-oauth",
-	"version": "1.0.11",
+	"version": "1.0.12",
 	"description": "Titanium native mobile OAuth plugin for authentication manager",
 	"keywords": [
 		"oauth",
@@ -55,8 +55,9 @@
 	},
 	"main": "./OAuthAuthentication.js",
 	"scripts": {
-		"test": "npm install --ignore-scripts && npm run list",
+		"prep": "npm install --ignore-scripts && npm run list",
 		"list": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz",
-		"prepublishOnly": "git pull && bump release"
+		"prepublishOnly": "git pull && bump release",
+		"test": "npm run test"
 	}
 }
