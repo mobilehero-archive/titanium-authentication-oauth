@@ -2,6 +2,7 @@
 /* eslint-disable promise/avoid-new */
 // RFC for OAuth2: https://tools.ietf.org/html/rfc6749
 
+const Alloy = require(`/alloy`);
 const logger = require(`@geek/logger`).createLogger(`@titanium/authentication-oauth`, { meta: { filename: __filename } });
 const Please = require(`@titanium/please`);
 const AuthToken = require(`@geek/jwt/AuthToken`);
