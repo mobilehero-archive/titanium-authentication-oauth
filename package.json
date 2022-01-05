@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/authentication-oauth",
-	"version": "1.0.13",
+	"version": "1.0.15",
 	"description": "Titanium native mobile OAuth plugin for authentication manager",
 	"keywords": [
 		"oauth",
@@ -14,6 +14,15 @@
 		"android",
 		"native",
 		"appcelerator",
+		"plugin",
+		"amplify",
+		"api-builder",
+		"appcelerator-titanium",
+		"titanium-sdk",
+		"titanium-mobile",
+		"titanium-module",
+		"axway-sdk",
+		"axway-amplify",
 		"brenton-house"
 	],
 	"author": {
@@ -33,6 +42,7 @@
 		"type": "git",
 		"url": "github:brentonhouse/titanium-authentication-oauth"
 	},
+	"homepage": "https://brenton.house/saying-goodbye-to-axway-amplify-titanium-31a44f3671de",
 	"bugs": {
 		"url": "https://github.com/brentonhouse/titanium-authentication-oauth/issues",
 		"email": "brenton.house@gmail.com"
@@ -57,7 +67,7 @@
 	"scripts": {
 		"prep": "npm install --ignore-scripts && npm run list",
 		"list": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz",
-		"prepublishOnly": "git pull && bump release",
+		"prepublishOnly": "git pull && bump insane",
 		"test": "npm run prep"
 	}
 }
