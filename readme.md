@@ -1,3 +1,5 @@
+[//]: # (header-start)
+
 <a href="https://brenton.house/saying-goodbye-to-axway-amplify-titanium-31a44f3671de">
 	<h1 align="center">
 	🪦 RIP Axway Amplify Titanium (2010 - 2022)
@@ -24,13 +26,15 @@
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 
+[//]: # (header-end)
+
 # @titanium/authentication <sup><sup><sub><a name="brenton-house" href="#brenton-house">🚀</a></sub></sup></sup> 
 
-![GitHub stars](https://img.shields.io/github/stars/brentonhouse/titanium-authentication-oauth?style=social)
-![GitHub forks](https://img.shields.io/github/forks/brentonhouse/titanium-authentication-oauth?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/brentonhouse/titanium-authentication-oauth?style=social)
+![GitHub stars](https://img.shields.io/github/stars/mobilehero-archive/titanium-authentication-oauth?style=social)
+![GitHub forks](https://img.shields.io/github/forks/mobilehero-archive/titanium-authentication-oauth?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/mobilehero-archive/titanium-authentication-oauth?style=social)
 [![@titanium/authentication](https://img.shields.io/npm/v/@titanium/authentication-oauth.png)](https://www.npmjs.com/package/@titanium/authentication-oauth)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=brentonhouse/titanium-authentication-oauth)](https://dependabot.com)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=mobilehero-archive/titanium-authentication-oauth)](https://dependabot.com)
 
 * [📓   &nbsp; Description](#----description)
 * [✨  &nbsp; Features](#---features)
