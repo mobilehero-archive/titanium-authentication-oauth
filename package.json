@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/authentication-oauth",
-	"version": "1.0.21",
+	"version": "1.0.22",
 	"description": "⭐  Axway Amplify module for OAuth authentication with Appcelerator Titanium SDK",
 	"keywords": [
 		"oauth",
@@ -27,13 +27,11 @@
 	],
 	"author": {
 		"name": "Brenton House",
-		"email": "brenton.house@gmail.com",
 		"url": "https://brenton.house"
 	},
 	"maintainers": [
 		{
 			"name": "Brenton House",
-			"email": "brenton.house@gmail.com",
 			"url": "https://brenton.house"
 		}
 	],
@@ -56,10 +54,10 @@
 		"moment": "^2.29.1"
 	},
 	"peerDependencies": {
-		"@geek/jwt": "latest",
-		"@geek/logger": "latest",
-		"@titanium/please": "latest",
-		"@titanium/polyfill": "latest",
+		"@geek/jwt": "^1.0.1",
+		"@geek/logger": "^1.0.18",
+		"@titanium/please": "^1.0.18",
+		"@titanium/polyfill": "^1.0.19",
 		"moment": "latest"
 	},
 	"main": "./OAuthAuthentication.js",
@@ -70,5 +68,28 @@
 		"test": "npm run prep",
 		"prepublishOnly": "git pull && npm test && bump insane",
 		"prepublishOnly2": "git pull && npm test && npm audit fix && bump insane"
+	},
+	"dependencies": {
+		"@geek/cache": "^1.0.2",
+		"@geek/config": "^0.2.4",
+		"@geek/dotenv": "^0.0.9",
+		"@geek/eslint-config": "^1.0.3",
+		"@geek/jsonc": "^1.0.4",
+		"@geek/retry": "^1.0.0",
+		"@geek/spawn": "^0.0.3",
+		"@geek/spinner": "^1.0.0",
+		"@geek/tld": "^2.0.1-1",
+		"@titanium/appcelerator": "^6.0.6",
+		"@titanium/bluebird": "^3.7.12",
+		"@titanium/errors": "^1.0.9",
+		"@titanium/essentials": "^1.0.40",
+		"@titanium/events": "^1.0.21",
+		"@titanium/eventsource": "^1.0.6",
+		"@titanium/jwt": "^1.0.12",
+		"@titanium/module-copier": "^1.0.15",
+		"@titanium/querystring": "^1.0.5",
+		"@titanium/tiapp-xml": "^1.0.17",
+		"@titanium/titanium": "^5.4.10",
+		"@titanium/turbo": "^2.2.26"
 	}
 }
