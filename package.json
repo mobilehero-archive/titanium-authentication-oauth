@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/authentication-oauth",
-	"version": "1.0.47",
+	"version": "1.0.48",
 	"description": "⭐  Axway Amplify module for OAuth authentication with Appcelerator Titanium SDK",
 	"keywords": [
 		"oauth",
@@ -48,20 +48,20 @@
 		"@titanium/eslint-config": "1.0.38",
 		"eslint": "^8.7.0",
 		"eslint-plugin-import": "^2.25.4",
-		"eslint-plugin-jsdoc": "^37.6.3",
+		"eslint-plugin-jsdoc": "^37.7.0",
 		"eslint-plugin-promise": "^6.0.0",
 		"lodash": "^4.17.21",
 		"moment": "^2.29.1",
 		"@geek/jwt": "^1.0.1",
 		"@geek/logger": "^1.0.18",
-		"@titanium/please": "^1.0.40",
-		"@titanium/polyfill": "^1.0.41"
+		"@titanium/please": "^1.0.42",
+		"@titanium/polyfill": "^1.0.42"
 	},
 	"peerDependencies": {
 		"@geek/jwt": "^1.0.1",
 		"@geek/logger": "^1.0.18",
-		"@titanium/please": "^1.0.40",
-		"@titanium/polyfill": "^1.0.41",
+		"@titanium/please": "^1.0.42",
+		"@titanium/polyfill": "^1.0.42",
 		"moment": "latest"
 	},
 	"main": "./OAuthAuthentication.js",
@@ -88,12 +88,12 @@
 		"@titanium/errors": "^1.0.33",
 		"@titanium/essentials": "^1.0.67",
 		"@titanium/events": "^1.0.44",
-		"@titanium/eventsource": "^1.0.36",
-		"@titanium/jwt": "^1.0.33",
+		"@titanium/eventsource": "^1.0.38",
+		"@titanium/jwt": "^1.0.34",
 		"@titanium/module-copier": "^1.0.42",
-		"@titanium/querystring": "^1.0.32",
-		"@titanium/tiapp-xml": "^1.0.41",
-		"@titanium/titanium": "^5.4.39",
+		"@titanium/querystring": "^1.0.33",
+		"@titanium/tiapp-xml": "^1.0.42",
+		"@titanium/titanium": "^5.4.40",
 		"@titanium/turbo": "^2.2.59"
 	}
 }
